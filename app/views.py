@@ -1,7 +1,12 @@
-from flask import render_template
+from flask import render_template, flash
 from app import app
+from .forms import *
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('base.html',
-                           title='Caffè Noir')
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        flash('Succesfully received form data. %s and %s '%(login_form.username.data, login_form.password.data))
+    return render_template('index.html',
+                            title='Caffè Noir',
+                            form=login_form)
