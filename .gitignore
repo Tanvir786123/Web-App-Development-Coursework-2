@@ -1,3 +1,6 @@
 # Ignore all the __pycache__ directories
 
 __pycache__/
+
+# Ignore all database files
+*.db
