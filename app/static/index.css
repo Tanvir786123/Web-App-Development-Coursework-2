@@ -61,7 +61,7 @@ body {
     cursor: pointer
 }
 
-.box #login_text {
+.box .login_text {
     color: #09429e;
 }
 

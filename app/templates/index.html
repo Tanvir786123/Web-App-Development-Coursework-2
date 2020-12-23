@@ -1,20 +1,26 @@
 {% extends "base.html" %}
-{% block login %}
+
+{% block login_stylesheet %}
   <link rel="stylesheet" href="../static/index.css">
+{% endblock %}
+
+{% block login %}
   <body class="text-center">
     <div class="container">
       <div class="row">
         <div class="col-md-6">
           <div class="card">
-            <form action="" class="box" id="login" method="post">
+            <form class="box" id="login" method="post">
               {{ form.hidden_tag() }}
-              <h1 id="login_text">Welcome</h1>
-              <p id="login_text"> Please enter your username and password.</p>
+              <h1 class="login-text">Welcome</h1>
+              <p class="login-text"> Please enter your username and password.</p>
               {{ form.username(autocomplete="username",
                                placeholder="Username" )}}
               {{ form.password(type="password", autocomplete="current-password",
                  placeholder="Password" )}}
-              <a id="login_text" href="#">Forgot password?</a>
+              <a class="login-text" href="#">Forgot password?</a>
+              <br>
+              <a class="login-text" href="#">Sign up?</a>
               <input type="submit" value="Login">
               <div class="flash-messages">
                 {% with messages = get_flashed_messages() %}
