@@ -6,9 +6,10 @@ from .models import *
 from flask_login import login_user, logout_user
 from flask_admin.menu import MenuLink
 
-admin.add_view(ModelView(Staff, db.session))
 admin.add_view(ModelView(Controller, db.session))
 admin.add_view(ModelView(Manager, db.session))
+admin.add_view(ModelView(Staff, db.session))
+admin.add_view(ModelView(User, db.session))
 
 admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
@@ -20,35 +21,40 @@ def index():
     login_form = LoginForm()
     if login_form.validate_on_submit():
         admin = Controller.query.filter_by(username=login_form.username.data)\
-                                .filter_by(password=login_form.password.data)\
-                                .all()
-        if admin:
-            login_user(Controller(login_form.username.data,\
-                                  login_form.password.data))
+                                .first()
+        manager = Manager.query.filter_by(username=login_form.username.data)\
+                               .first()
+        staff = Staff.query.filter_by(username=login_form.username.data)\
+                           .first()
+        user = User.query.filter_by(username=login_form.username.data)\
+                         .first()
+        if admin and admin.verify_password(login_form.password.data):
+            login_user(admin)
             return redirect(url_for('admin.index'))
-        else:
-            manager = Manager.query.filter_by(username=login_form.username.data\
-                                  ).filter_by(password=login_form.password.data\
-                                  ).all()
-            if manager:
-                login_user(Manager(login_form.username.data,\
-                                      login_form.password.data))
-                flash('You are a manager')
+        elif manager and manager.verify_password(login_form.password.data):
+            login_user(manager)
+            flash('You are a manager')
+        elif staff and staff.verify_password(login_form.password.data):
+            login_user(staff)
+            flash('You are a staff member')
+        elif user and user.verify_password(login_form.password.data):
+            login_user(user)
+            flash('You are a user')
     return render_template('index.html',
-                            title='Cafè Noir',
-                            form=login_form)
+                           title='Cafè Noir',
+                           form=login_form)
 
 def default_admin_credentials():
     rows = Controller.query.count()
     if rows == 0:
-        admin = Controller(username='admin', password='admin')
+        admin = Controller('admin', '79A4BD7FB9')
         db.session.add(admin)
         db.session.commit()
 
 def init_manager():
     rows = Manager.query.count()
     if rows == 0:
-        manager = Manager(username='alan123', password='alan123')
+        manager = Manager('alan123', '79A4BD7FB9')
         db.session.add(manager)
         db.session.commit()
 

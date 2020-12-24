@@ -26,7 +26,7 @@ class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
         return current_user.is_authenticated
 
-admin = Admin(app,template_mode='bootstrap4', index_view=MyAdminIndexView())
+admin = Admin(app, template_mode='bootstrap4', index_view=MyAdminIndexView())
 
 from app import views, models
 
@@ -34,11 +34,16 @@ from app import views, models
 @login_manager.user_loader
 def load_user(username):
     admin = models.Controller.query.filter_by(username=username).first()
+    manager = models.Manager.query.filter_by(username=username).first()
+    staff = models.Staff.query.filter_by(username=username).first()
+    user = models.User.query.filter_by(username=username).first()
     if admin:
         return admin
-    else:
-        manager = models.Manager.query.filter_by(username=username).first()
-    if manager:
+    elif manager:
         return manager
+    elif staff:
+        return staff
+    elif user:
+        return user
     else:
         return None
