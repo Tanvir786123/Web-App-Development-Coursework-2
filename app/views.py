@@ -12,5 +12,5 @@ def index():
     if login_form.validate_on_submit():
         flash('Succesfully received form data. %s and %s '%(login_form.username.data, login_form.password.data))
     return render_template('index.html',
-                            title='Caffè Noir',
+                            title='Cafè Noir',
                             form=login_form)
