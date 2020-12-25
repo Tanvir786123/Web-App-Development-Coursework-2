@@ -15,7 +15,7 @@ admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    default_admin_credentials()
+    init_admin()
     init_manager()
     login_form = LoginForm()
     if login_form.validate_on_submit():
@@ -39,6 +39,8 @@ def index():
         elif user and user.verify_password(login_form.password.data):
             login_user(user, remember=login_form.remember_me.data)
             flash('You are a user')
+        else:
+            flash("Incorrect username or password")
     return render_template('index.html',
                            title='Cafè Noir',
                            form=login_form)
@@ -52,7 +54,7 @@ def signup():
                            title='Cafè Noir',
                            form=sign_up_form)
 
-def default_admin_credentials():
+def init_admin():
     rows = Controller.query.count()
     if rows == 0:
         admin = Controller('admin', '79A4BD7FB9')

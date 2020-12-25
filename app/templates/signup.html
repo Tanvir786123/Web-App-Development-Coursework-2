@@ -19,7 +19,7 @@
                              placeholder="Username" )}}
             <div class="client-id-errors">
               <div class="alert alert-danger" role="alert">
-                  <p class="id-errors"</p>
+                  <p class="id-errors"></p>
               </div>
             </div>
             {% for error in form.username.errors %}
@@ -29,12 +29,12 @@
             {% endfor %}
             {{ form.password(autocomplete="new-password", id="password-field",
                              placeholder="New password" )}}
-            {{ form.confirmed_password(autocomplete="confirm-password",
+            {{ form.confirmed_password(autocomplete="new-password",
                                        id="confirm-field",
                                        placeholder="Confirm password" )}}
             <div class="client-password-errors">
               <div class="alert alert-danger" role="alert">
-                <p class="password-errors"</p>
+                <p class="password-errors"></p>
               </div>
             </div>
             {% for error in form.password.errors %}
