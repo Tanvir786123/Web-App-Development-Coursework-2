@@ -43,6 +43,20 @@
       </div>
     </div>
     <script>
+      window.cookieconsent.initialise({
+        "palette": {
+          "popup": {
+            "background": "#FFFFFF",
+            "text": "#09429e"
+          },
+          "button": {
+            "background": "#2ecc71",
+            "text": "#09429e"
+          }
+        },
+        "position": "top",
+        "static": true
+      });
     $(document).ready(function(){
       $("#username-field").focus();
     });

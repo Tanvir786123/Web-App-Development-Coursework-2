@@ -13,6 +13,8 @@ migrate = Migrate(app, db, render_as_batch=True)
 
 login_manager = LoginManager(app)
 
+execute_once = False
+
 # Create customized model view class
 class MyModelView(ModelView):
     def is_accessible(self):

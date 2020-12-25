@@ -22,6 +22,11 @@
                   <p class="id-errors"></p>
               </div>
             </div>
+            <div class="client-id-password-errors">
+              <div class="alert alert-danger" role="alert">
+                  <p class="password-id-errors"></p>
+              </div>
+            </div>
             {% for error in form.username.errors %}
               <div class="alert alert-danger" role="alert">
                 {{ error }}
@@ -48,11 +53,19 @@
             <div class="flash-messages">
               {% with messages = get_flashed_messages() %}
                 {% if messages %}
-                <div class="alert alert-danger" role="alert">
-                  {% for message in messages %}
-                    {{ message }}
-                  {% endfor %}
-                </div>
+                  {% if status %}
+                    <div class="alert alert-success" role="alert">
+                      {% for message in messages %}
+                        {{ message }}
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <div class="alert alert-danger" role="alert">
+                      {% for message in messages %}
+                        {{ message }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 {% endif %}
               {% endwith %}
             </div>
@@ -67,14 +80,16 @@
     $("#username-field").focus();
     $(".client-id-errors").hide();
     $(".client-password-errors").hide();
+    $(".client-id-password-errors").hide();
   });
   function validateForm(){
     var id = $("#username-field").val();
     var password = $("#password-field").val();
     var confirm = $("#confirm-field").val();
-    if (id.length > 255 || password.length > 255 || confirm.length > 255){
+    if (id.length > 255 || password.length > 255 || confirm.length > 255
+        || id == password){
       if(id.length > 255){
-        $(".id-errors").text("Field must not be more than 255 characters"+
+        $(".id-errors").text("Username must not be more than 255 characters"+
                              " long.");
         $(".client-id-errors").show();
       }
@@ -82,12 +97,20 @@
         $(".client-id-errors").hide();
       }
       if(password.length > 255 || confirm.length > 255){
-        $(".password-errors").text("Field must not be more than 255 characters"+
-                                   " long.");
+        $(".password-errors").text("Password must not be more than 255"+
+                                   " characters long.");
         $(".client-password-errors").show();
       }
       else{
         $(".client-password-errors").hide();
+      }
+      if(id === password){
+        $(".password-id-errors").text("Username must be different from the"+
+                                      " chosen password.");
+        $(".client-id-password-errors").show();
+      }
+      else{
+        $(".client-id-password-errors").hide();
       }
       return false;
     }
