@@ -10,21 +10,33 @@
     <div class="row">
       <div class="col-md-6">
         <div class="card">
-          <form class="box" id="sign_up" method="post">
+          <form class="box" id="sign_up" method="post"
+                onsubmit="return validateForm()">
             {{ form.hidden_tag() }}
             <h1 class="text-color">Sign up</h1>
             <p class="text-color">Please enter your details below.</p>
             {{ form.username(autocomplete="username", id="username-field",
                              placeholder="Username" )}}
+            <div class="client-id-errors">
+              <div class="alert alert-danger" role="alert">
+                  <p class="id-errors"</p>
+              </div>
+            </div>
             {% for error in form.username.errors %}
               <div class="alert alert-danger" role="alert">
                 {{ error }}
               </div>
             {% endfor %}
-            {{ form.password(autocomplete="new-password",
+            {{ form.password(autocomplete="new-password", id="password-field",
                              placeholder="New password" )}}
             {{ form.confirmed_password(autocomplete="confirm-password",
-                             placeholder="Confirm password" )}}
+                                       id="confirm-field",
+                                       placeholder="Confirm password" )}}
+            <div class="client-password-errors">
+              <div class="alert alert-danger" role="alert">
+                <p class="password-errors"</p>
+              </div>
+            </div>
             {% for error in form.password.errors %}
               <div class="alert alert-danger" role="alert">
                 {{ error }}
@@ -51,8 +63,36 @@
   </div>
   <script>
   $(document).ready(function(){
+    $("#username-field").val("");
     $("#username-field").focus();
+    $(".client-id-errors").hide();
+    $(".client-password-errors").hide();
   });
+  function validateForm(){
+    var id = $("#username-field").val();
+    var password = $("#password-field").val();
+    var confirm = $("#confirm-field").val();
+    if (id.length > 255 || password.length > 255 || confirm.length > 255){
+      if(id.length > 255){
+        $(".id-errors").text("Field must not be more than 255 characters"+
+                             " long.");
+        $(".client-id-errors").show();
+      }
+      else{
+        $(".client-id-errors").hide();
+      }
+      if(password.length > 255 || confirm.length > 255){
+        $(".password-errors").text("Field must not be more than 255 characters"+
+                                   " long.");
+        $(".client-password-errors").show();
+      }
+      else{
+        $(".client-password-errors").hide();
+      }
+      return false;
+    }
+    return true;
+  }
   </script>
 </body>
 {% endblock %}
