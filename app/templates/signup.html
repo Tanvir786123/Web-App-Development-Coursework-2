@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="../static/signup.css">
+{% endblock %}
+
+{% block content %}
+<body class="text-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <form class="box" id="sign_up" method="post">
+            {{ form.hidden_tag() }}
+            <h1 class="text-color">Sign up</h1>
+            <p class="text-color">Please enter your details below.</p>
+            {{ form.username(autocomplete="username", id="username-field",
+                             placeholder="Username" )}}
+            {% for error in form.username.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+            {{ form.password(autocomplete="new-password",
+                             placeholder="New password" )}}
+            {{ form.confirmed_password(autocomplete="confirm-password",
+                             placeholder="Confirm password" )}}
+            {% for error in form.password.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+            <input type="submit" value="Sign up">
+            <a class="text-color" id="ret-label" href="/">Go back?</a>
+            <br><br>
+            <div class="flash-messages">
+              {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="alert alert-danger" role="alert">
+                  {% for message in messages %}
+                    {{ message }}
+                  {% endfor %}
+                </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+  $(document).ready(function(){
+    $("#username-field").focus();
+  });
+  </script>
+</body>
+{% endblock %}

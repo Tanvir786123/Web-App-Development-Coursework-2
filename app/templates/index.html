@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block login_stylesheet %}
+{% block stylesheet %}
   <link rel="stylesheet" href="../static/index.css">
 {% endblock %}
 
-{% block login %}
+{% block content %}
   <body class="text-center">
     <div class="container">
       <div class="row">
@@ -12,15 +12,19 @@
           <div class="card">
             <form class="box" id="login" method="post">
               {{ form.hidden_tag() }}
-              <h1 class="login-text">Welcome</h1>
-              <p class="login-text">Please enter your username and password.</p>
-              {{ form.username(autocomplete="username",
+              <h1 class="text-color">Welcome</h1>
+              <p class="text-color">Please enter your username and password.</p>
+              {{ form.username(autocomplete="username", id="username-field",
                                placeholder="Username" )}}
               {{ form.password(autocomplete="current-password",
                                placeholder="Password" )}}
-              <a class="login-text" href="#">Forgot password?</a>
+              <a class="text-color" href="#">Forgot password?</a>
               <br>
-              <a class="login-text" href="#">Sign up?</a>
+              <a class="text-color" href="/signup">Sign up?</a>
+              <br>
+              {{ form.remember_me(id="remember-me") }}
+              <label class="text-color" for="remember-me">Remember me?</label
+              <br>
               <input type="submit" value="Login">
               <div class="flash-messages">
                 {% with messages = get_flashed_messages() %}
@@ -38,5 +42,10 @@
         </div>
       </div>
     </div>
+    <script>
+    $(document).ready(function(){
+      $("#username-field").focus();
+    });
+    </script>
   </body>
 {% endblock %}

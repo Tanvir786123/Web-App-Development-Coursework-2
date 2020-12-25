@@ -15,7 +15,6 @@ admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    logout_user()
     default_admin_credentials()
     init_manager()
     login_form = LoginForm()
@@ -29,20 +28,29 @@ def index():
         user = User.query.filter_by(username=login_form.username.data)\
                          .first()
         if admin and admin.verify_password(login_form.password.data):
-            login_user(admin)
+            login_user(admin, remember=login_form.remember_me.data)
             return redirect(url_for('admin.index'))
         elif manager and manager.verify_password(login_form.password.data):
-            login_user(manager)
+            login_user(manager, remember=login_form.remember_me.data)
             flash('You are a manager')
         elif staff and staff.verify_password(login_form.password.data):
-            login_user(staff)
+            login_user(staff, remember=login_form.remember_me.data)
             flash('You are a staff member')
         elif user and user.verify_password(login_form.password.data):
-            login_user(user)
+            login_user(user, remember=login_form.remember_me.data)
             flash('You are a user')
     return render_template('index.html',
                            title='Cafè Noir',
                            form=login_form)
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    sign_up_form = SignUpForm()
+    if sign_up_form.validate_on_submit():
+        flash('Yay')
+    return render_template('signup.html',
+                           title='Cafè Noir',
+                           form=sign_up_form)
 
 def default_admin_credentials():
     rows = Controller.query.count()
