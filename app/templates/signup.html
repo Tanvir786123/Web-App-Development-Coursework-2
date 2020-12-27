@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block stylesheet %}
+{% block signup_stylesheet %}
   <link rel="stylesheet" href="../static/signup.css">
 {% endblock %}
 
@@ -48,7 +48,7 @@
               </div>
             {% endfor %}
             <input type="submit" value="Sign up">
-            <a class="text-color" id="ret-label" href="/">Go back?</a>
+            <a class="text-color" id="ret-label" href="/">Go back</a>
             <br><br>
             <div class="flash-messages">
               {% with messages = get_flashed_messages() %}

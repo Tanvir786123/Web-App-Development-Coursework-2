@@ -73,7 +73,6 @@ body {
 
 ::placeholder {
   color: #000000;
-  opacity: 1;
 }
 
 :-ms-input-placeholder {

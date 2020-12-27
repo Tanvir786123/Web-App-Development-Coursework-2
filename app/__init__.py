@@ -1,9 +1,10 @@
-from flask import Flask
+from flask import Flask, url_for, redirect
 from flask_admin import Admin, AdminIndexView
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, AnonymousUserMixin
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -13,24 +14,36 @@ migrate = Migrate(app, db, render_as_batch=True)
 
 login_manager = LoginManager(app)
 
-execute_once = False
-
 # Create customized model view class
 class MyModelView(ModelView):
     def is_accessible(self):
-        return current_user.is_authenticated
-
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('index'))
+        if current_user.is_authenticated == False:
+            return False
+        elif current_user.account_type() == models.Account.CONTROLLER_ACCOUNT:
+            return True
+        else:
+            return False
 
 # Create customized index view class
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
-        return current_user.is_authenticated
+        if current_user.is_authenticated == False:
+            return False
+        elif current_user.account_type() == models.Account.CONTROLLER_ACCOUNT:
+            return True
+        else:
+            return False
 
 admin = Admin(app, template_mode='bootstrap4', index_view=MyAdminIndexView())
 
 from app import views, models
+
+admin.add_view(MyModelView(models.User, db.session))
+admin.add_view(MyModelView(models.Staff, db.session))
+admin.add_view(MyModelView(models.Manager, db.session))
+admin.add_view(MyModelView(models.Controller, db.session))
+
+admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
 # Create user loader function
 @login_manager.user_loader

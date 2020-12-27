@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block manager_base_stylesheet %}
+  <link rel="stylesheet" href="../static/manager_base.css">
+{% endblock %}
+
+{% block content %}
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light font-weight-bold">
+      <a href="/manager" class="navbar-brand">
+        <img src="../static/cafe_noir_logo.png" width="120" alt=""
+             class="d-inline-block align-middle mr-2">
+        <span class="text-uppercase font-weight-bold">{{ title }}</span>
+      </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarText" aria-controls="navbarText"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button"
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Add
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Staff</a>
+            <a class="dropdown-item" href="#">Products</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button"
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            View
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Staff</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button"
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Delete
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Staff</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button"
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Help
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Change my password</a>
+          </div>
+        </li>
+      </ul>
+      <span class="navbar-text">
+        <a class="nav-link" href="/logout">Logout
+          <span class="sr-only">(current)</span>
+        </a>
+      </span>
+    </div>
+  </nav>
+  {% block manager_content %} {% endblock %}
+</body>
+{% endblock %}

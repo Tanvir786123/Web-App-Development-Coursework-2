@@ -18,7 +18,10 @@
     {% else %}
       <title>Server error</title>
     {% endif %}
-    {% block stylesheet %}{% endblock %}
+    {% block index_stylesheet %} {% endblock %}
+    {% block manager_base_stylesheet %} {% endblock %}
+    {% block manager_index_stylesheet %} {% endblock %}
+    {% block signup_stylesheet %} {% endblock %}
   </head>
-    {% block content %}{% endblock %}
+    {% block content %} {% endblock %}
 </html>
