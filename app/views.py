@@ -45,12 +45,44 @@ def manager():
     else:
         return redirect(url_for('logout'))
 
+@app.route('/manager/add_staff', methods=['GET', 'POST'])
+@login_required
+def add_staff():
+    if current_user.account_type() == Account.MANAGER_ACCOUNT:
+        add_staff_form = AddStaffForm()
+        if add_staff_form.validate_on_submit():
+            add_staff_form.username.data = add_staff_form.username.data.lower()
+            admin = Controller.query.filter_by(username=add_staff_form\
+                                    .username.data).first()
+            manager = Manager.query.filter_by(username=add_staff_form\
+                                    .username.data).first()
+            staff = Staff.query.filter_by(username=add_staff_form.username.data\
+                                          ).first()
+            user = User.query.filter_by(username=add_staff_form.username.data)\
+                             .first()
+            if admin or manager or staff or user:
+                flash('This username has been taken, please try again.')
+            else:
+                staff = Staff(add_staff_form.username.data, add_staff_form\
+                              .password.data)
+                db.session.add(staff)
+                db.session.commit()
+                flash('Staff member was added successfully.')
+                return render_template('manager_add_staff.html',
+                                        title='Cafè Noir',
+                                        form=add_staff_form,
+                                        status=1)
+        return render_template('manager_add_staff.html', title='Cafè Noir',
+                                form=add_staff_form,
+                                status=0)
+    else:
+        return redirect(url_for('logout'))
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     sign_up_form = SignUpForm()
     if sign_up_form.validate_on_submit():
         sign_up_form.username.data = sign_up_form.username.data.lower()
-        print("The username is " + sign_up_form.username.data)
         admin = Controller.query.filter_by(username=sign_up_form.username.data)\
                                 .first()
         manager = Manager.query.filter_by(username=sign_up_form.username.data)\

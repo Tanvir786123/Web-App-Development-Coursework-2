@@ -11,7 +11,7 @@
       <div class="col-md-6">
         <div class="card">
           <form class="box" id="sign_up" method="post"
-                onsubmit="return validateForm()">
+                onsubmit="return validateSignUpForm()">
             {{ form.hidden_tag() }}
             <h1 class="text-color">Sign up</h1>
             <p class="text-color">Please enter your details below.</p>
@@ -82,7 +82,7 @@
     $(".client-password-errors").hide();
     $(".client-id-password-errors").hide();
   });
-  function validateForm(){
+  function validateSignUpForm(){
     var id = $("#username-field").val();
     var password = $("#password-field").val();
     var confirm = $("#confirm-field").val();
