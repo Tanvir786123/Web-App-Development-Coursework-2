@@ -52,7 +52,7 @@ def index():
 @app.route('/add_products', methods=['GET', 'POST'])
 @login_required
 def add_products():
-    return render_template('manager_add_products.html', title='Cafè Noir') 
+    return render_template('manager_add_products.html', title='Cafè Noir')
 
 @app.route('/change_manager_password/<user_id>', methods=['GET', 'POST'])
 @login_required
@@ -67,24 +67,24 @@ def change_manager_password(user_id):
                                            change_password_form.password.data)
                 db.session.commit()
                 flash('Your password has been updated.')
-                return render_template('change_manager_password.html',
+                return render_template('manager_change_password.html',
                                         title='Cafè Noir',
                                         form=change_password_form, status=1)
             else:
                 flash('An unknown error has occured, you will be directed to\
                        the login page in 10 seconds.\
                        Please ensure cookies are enabled.')
-                return render_template('change_manager_password.html',\
+                return render_template('manager_change_password.html',\
                                         form=change_password_form, status=0),\
                                         {"Refresh": "10; url=/logout"}
         else:
             flash('An unknown error has occured, you will be directed to the\
                    login page in 10 seconds.\
                    Please ensure cookies are enabled.')
-            return render_template('change_manager_password.html',\
+            return render_template('manager_change_password.html',\
                                     form=change_password_form, status=0),\
                                     {"Refresh": "10; url=/logout"}
-    return render_template('change_manager_password.html', title='Cafè Noir',
+    return render_template('manager_change_password.html', title='Cafè Noir',
                             form=change_password_form, status=0)
 
 @app.route('/manager')
