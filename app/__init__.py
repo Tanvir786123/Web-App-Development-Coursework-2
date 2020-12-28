@@ -13,6 +13,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db, render_as_batch=True)
 
 login_manager = LoginManager(app)
+login_manager.session_protection = "strong"
 
 # Create customized model view class
 class MyModelView(ModelView):

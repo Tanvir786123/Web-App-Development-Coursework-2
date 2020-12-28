@@ -26,3 +26,11 @@ class AddStaffForm(Form):
                               Length(min=5)])
     confirmed_password = PasswordField('Confirm password',
                                         validators=[DataRequired()])
+
+class ChangeMyPasswordForm(Form):
+    password = PasswordField('New password', validators=[DataRequired(),
+                              EqualTo('confirmed_password',
+                              message='Passwords must match.'),
+                              Length(min=5)])
+    confirmed_password = PasswordField('Confirm password',
+                                        validators=[DataRequired()])

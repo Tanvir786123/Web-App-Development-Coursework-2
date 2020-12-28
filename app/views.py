@@ -6,10 +6,22 @@ from .forms import *
 from .models import *
 from flask_login import login_user, logout_user, login_required, current_user
 
+COOKIE_ID_KEY = 'id'
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     init_admin()
     init_manager()
+    if current_user.is_authenticated:
+        if current_user.account_type() == Account.MANAGER_ACCOUNT:
+            return redirect(url_for('manager'))
+        elif current_user.account_type() == Account.USER_ACCOUNT:
+            pass
+        elif current_user.account_type() == Account.STAFF_ACCOUNT:
+            pass
+        elif current_user.account_type() == Account.CONTROLLER_ACCOUNT:
+            return redirect(url_for('admin.index'))
+
     login_form = LoginForm()
     if login_form.validate_on_submit():
         login_form.username.data = login_form.username.data.lower()
@@ -37,11 +49,51 @@ def index():
             flash("Incorrect username or password")
     return render_template('index.html', title='Cafè Noir', form=login_form)
 
+@app.route('/change_manager_password/<user_id>', methods=['GET', 'POST'])
+@login_required
+def change_manager_password(user_id):
+    change_password_form = ChangeMyPasswordForm()
+    if change_password_form.validate_on_submit():
+        cookie_id = request.cookies.get('id')
+        if cookie_id and cookie_id == user_id:
+            manager = Manager.query.filter_by(username=cookie_id).first()
+            if manager:
+                manager.password = manager.generate_new_password_hash(
+                                           change_password_form.password.data)
+                db.session.commit()
+                flash('Your password has been updated.')
+                return render_template('change_manager_password.html',
+                                        title='Cafè Noir',
+                                        form=change_password_form, status=1)
+            else:
+                flash('An unknown error has occured, you will be directed to\
+                       the login page in 10 seconds.\
+                       Please ensure cookies are enabled.')
+                return render_template('change_manager_password.html',\
+                                        form=change_password_form, status=0),\
+                                        {"Refresh": "10; url=/logout"}
+        else:
+            flash('An unknown error has occured, you will be directed to the\
+                   login page in 10 seconds.\
+                   Please ensure cookies are enabled.')
+            return render_template('change_manager_password.html',\
+                                    form=change_password_form, status=0),\
+                                    {"Refresh": "10; url=/logout"}
+    return render_template('change_manager_password.html', title='Cafè Noir',
+                            form=change_password_form, status=0)
+
 @app.route('/manager')
 @login_required
 def manager():
     if current_user.account_type() == Account.MANAGER_ACCOUNT:
-        return render_template('manager_index.html', title='Cafè Noir')
+        cookie_id = request.cookies.get(COOKIE_ID_KEY)
+        if not cookie_id:
+            res = make_response(render_template('manager_index.html',
+                                                 title='Cafè Noir'))
+            res.set_cookie(COOKIE_ID_KEY, current_user.get_id(), httponly=True)
+            return res
+        else:
+            return render_template('manager_index.html', title='Cafè Noir')
     else:
         return redirect(url_for('logout'))
 
@@ -108,6 +160,11 @@ def signup():
 @login_required
 def logout():
     logout_user()
+    cookie_id = request.cookies.get(COOKIE_ID_KEY)
+    if cookie_id:
+        res = make_response(redirect(url_for('index')))
+        res.set_cookie(COOKIE_ID_KEY, '', expires=0)
+        return res
     return redirect(url_for('index'))
 
 def init_admin():

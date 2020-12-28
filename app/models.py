@@ -8,7 +8,6 @@ class Account(enum.Enum):
     STAFF_ACCOUNT = 2
     MANAGER_ACCOUNT = 3
     CONTROLLER_ACCOUNT = 4
-    ANONYMOUS_ACCOUNT = 5
 
 class User(db.Model, UserMixin):
     username = db.Column(db.String(), primary_key=True, index=True)
@@ -33,6 +32,9 @@ class User(db.Model, UserMixin):
     def account_type(self):
         return self.acc_type
 
+    def generate_new_password_hash(self, new_pass):
+        return generate_password_hash(new_pass)
+
 class Staff(db.Model, UserMixin):
     username = db.Column(db.String(), primary_key=True, index=True)
     password = db.Column(db.String(), index=True, nullable=False)
@@ -55,6 +57,9 @@ class Staff(db.Model, UserMixin):
 
     def account_type(self):
         return self.acc_type
+
+    def generate_new_password_hash(self, new_pass):
+        return generate_password_hash(new_pass)
 
 class Manager(db.Model, UserMixin):
     username = db.Column(db.String(), primary_key=True, index=True)
@@ -79,6 +84,9 @@ class Manager(db.Model, UserMixin):
     def account_type(self):
         return self.acc_type
 
+    def generate_new_password_hash(self, new_pass):
+        return generate_password_hash(new_pass)
+
 class Controller(db.Model, UserMixin):
     username = db.Column(db.String(), primary_key=True, index=True)
     password = db.Column(db.String(), index=True, nullable=False)
@@ -101,3 +109,6 @@ class Controller(db.Model, UserMixin):
 
     def account_type(self):
         return self.acc_type
+
+    def generate_new_password_hash(self, new_pass):
+        return generate_password_hash(new_pass)
