@@ -10,8 +10,8 @@ class Account(enum.Enum):
     CONTROLLER_ACCOUNT = 4
 
 class User(db.Model, UserMixin):
-    username = db.Column(db.String(), primary_key=True, index=True)
-    password = db.Column(db.String(), index=True, nullable=False)
+    username = db.Column(db.String(255), primary_key=True, index=True)
+    password = db.Column(db.String(255), index=True, nullable=False)
 
     acc_type = Account.USER_ACCOUNT
 
@@ -36,8 +36,8 @@ class User(db.Model, UserMixin):
         return generate_password_hash(new_pass)
 
 class Staff(db.Model, UserMixin):
-    username = db.Column(db.String(), primary_key=True, index=True)
-    password = db.Column(db.String(), index=True, nullable=False)
+    username = db.Column(db.String(255), primary_key=True, index=True)
+    password = db.Column(db.String(255), index=True, nullable=False)
 
     acc_type = Account.STAFF_ACCOUNT
 
@@ -62,8 +62,8 @@ class Staff(db.Model, UserMixin):
         return generate_password_hash(new_pass)
 
 class Manager(db.Model, UserMixin):
-    username = db.Column(db.String(), primary_key=True, index=True)
-    password = db.Column(db.String(), index=True, nullable=False)
+    username = db.Column(db.String(255), primary_key=True, index=True)
+    password = db.Column(db.String(255), index=True, nullable=False)
 
     acc_type = Account.MANAGER_ACCOUNT
 
@@ -88,8 +88,8 @@ class Manager(db.Model, UserMixin):
         return generate_password_hash(new_pass)
 
 class Controller(db.Model, UserMixin):
-    username = db.Column(db.String(), primary_key=True, index=True)
-    password = db.Column(db.String(), index=True, nullable=False)
+    username = db.Column(db.String(255), primary_key=True, index=True)
+    password = db.Column(db.String(255), index=True, nullable=False)
 
     acc_type = Account.CONTROLLER_ACCOUNT
 
