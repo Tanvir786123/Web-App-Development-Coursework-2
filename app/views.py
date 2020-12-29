@@ -59,7 +59,8 @@ def add_products():
         try:
             response = requests.get(add_products_form.\
                                     product_thumbnail_link.data)
-            path = os.path.join(app.root_path, 'static', 'product_images', 'logo.png')
+            path = os.path.join(app.root_path, 'static', 'product_images',
+                                'logo.png')
             file = open(path, "wb")
             file.write(response.content)
             file.close()
