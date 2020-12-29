@@ -49,10 +49,17 @@ def index():
             flash("Incorrect username or password")
     return render_template('index.html', title='Cafè Noir', form=login_form)
 
-@app.route('/add_products', methods=['GET', 'POST'])
+@app.route('/manager/add_products', methods=['GET', 'POST'])
 @login_required
 def add_products():
-    return render_template('manager_add_products.html', title='Cafè Noir')
+    add_products_form = AddProducts()
+    if add_products_form.validate_on_submit():
+        flash('yay')
+        return render_template('manager_add_products.html', title='Cafè Noir',
+                                form=add_products_form, status=1)
+    else:
+        return render_template('manager_add_products.html', title='Cafè Noir',
+                                form=add_products_form, status=0)
 
 @app.route('/change_manager_password/<user_id>', methods=['GET', 'POST'])
 @login_required

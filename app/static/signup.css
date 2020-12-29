@@ -67,10 +67,6 @@ body {
   background: #2ecc71;
 }
 
-.box .login_text {
-    color: #09429e;
-}
-
 ::placeholder {
   color: #000000;
 }

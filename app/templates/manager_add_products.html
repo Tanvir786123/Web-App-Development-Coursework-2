@@ -5,5 +5,207 @@
 {% endblock %}
 
 {% block manager_content %}
-  <h1>I AM ADD PRODUCTS PAGE WHICH IS NOT DONE</h1>
+  <div class="text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <form class="box" id="sign_up" method="post"
+                  onsubmit="return validateAddProductsForm()">
+                  {{ form.hidden_tag() }}
+                  <h1 class="text-color">Add Products</h1>
+                  <p class="text-color">Please enter the product details below.
+                  </p>
+                  {{ form.product_name(autocomplete="off",
+                                       id="product-name-field",
+                                       placeholder="Product name" )}}
+                  {% for error in form.product_name.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ error }}
+                    </div>
+                  {% endfor %}
+                  <div class="product-name-errors">
+                    <div class="alert alert-danger" role="alert">
+                      <p class="product-name-message"></p>
+                    </div>
+                  </div>
+                  {{ form.product_description(autocomplete="off",
+                                              id="product-description-field",
+                                              placeholder="Product description"
+                                             )}}
+                  {% for error in form.product_description.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ error }}
+                    </div>
+                  {% endfor %}
+                  <div class="product-description-errors">
+                    <div class="alert alert-danger" role="alert">
+                      <p class="product-description-message"></p>
+                    </div>
+                  </div>
+                  {{ form.product_current_quantity(autocomplete="off",
+                                                   id="product-quantity-field",
+                                                   placeholder=
+                                                              "Product quantity"
+                                                  )}}
+                  {% for error in form.product_current_quantity.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ error }}
+                    </div>
+                  {% endfor %}
+                  <div class="product-quantity-type-errors">
+                    <div class="alert alert-danger" role="alert">
+                      <p class="product-quantity-type-message"></p>
+                    </div>
+                  </div>
+                  {{ form.product_reorder_level(autocomplete="off",
+                                                id="product-reorder-field",
+                                                placeholder=
+                                                         "Product reorder level"
+                                               )}}
+                  {% for error in form.product_reorder_level.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ error }}
+                    </div>
+                  {% endfor %}
+                  <div class="product-reorder-type-errors">
+                    <div class="alert alert-danger" role="alert">
+                      <p class="product-reorder-type-message"></p>
+                    </div>
+                  </div>
+                  <div class="quantity-reorder-errors">
+                    <div class="alert alert-danger" role="alert">
+                      <p class="quantity-reorder-message"></p>
+                    </div>
+                  </div>
+                  {{ form.product_thumbnail_link(autocomplete="off",
+                                                 id="product-thumbnail-field",
+                                                 placeholder=
+                                                       "Link to thumbnail image"
+                                                )}}
+                  {% for error in form.product_thumbnail_link.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ error }}
+                    </div>
+                  {% endfor %}
+                  <div class="product-thumbnail-errors">
+                    <div class="alert alert-danger" role="alert">
+                      <p class="product-thumbnail-message"></p>
+                    </div>
+                  </div>
+                  <input type="submit" value="Add product">
+                  <a class="text-color" id="ret-label" href="/manager">Go back
+                  </a>
+                  <br><br>
+                  <div class="flash-messages">
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                        {% if status %}
+                          <div class="alert alert-success" role="alert">
+                            {% for message in messages %}
+                              {{ message }}
+                            {% endfor %}
+                          </div>
+                        {% else %}
+                          <div class="alert alert-danger" role="alert">
+                            {% for message in messages %}
+                              {{ message }}
+                            {% endfor %}
+                          </div>
+                        {% endif %}
+                      {% endif %}
+                    {% endwith %}
+                  </div>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function(){
+      $("#product-name-field").focus();
+      $(".quantity-reorder-errors").hide();
+      $(".product-name-errors").hide();
+      $(".product-description-errors").hide();
+      $(".product-thumbnail-errors").hide();
+      $(".product-quantity-type-errors").hide();
+      $(".product-reorder-type-errors").hide();
+      {% if status %}
+        $("#product-name-field").val("");
+        $("#product-description-field").val("");
+        $("#product-quantity-field").val("");
+        $("#product-reorder-field").val("");
+        $("#product-thumbnail-field").val("");
+      {% endif %}
+    });
+    function isNumeric(num){
+      return !isNaN(num)
+    }
+    function validateAddProductsForm(){
+      var currentQuantity = $("#product-quantity-field").val();
+      var reorderLevel = $("#product-reorder-field").val();
+      var productName = $("#product-name-field").val();
+      var productDesc = $("#product-description-field").val();
+      var productThumbnail = $("#product-thumbnail-field").val();
+      if((currentQuantity <= reorderLevel) || (productName.length > 255)
+        ||(productDesc.length > 255) || (productThumbnail.length > 255)
+        || !(isNumeric(currentQuantity)) || !(isNumeric(reorderLevel))){
+          if(productName.length > 255){
+            $(".product-name-message").text("Product name must not be more"+
+                                            " than 255 characters long.");
+            $(".product-name-errors").show();
+          }
+          else{
+            $(".product-name-errors").hide();
+          }
+          if(productDesc.length > 255){
+            $(".product-description-message").text("Product description must"+
+                                                   " not be more than 255"+
+                                                   " characters long.");
+            $(".product-description-errors").show();
+          }
+          else{
+            $(".product-description-errors").hide();
+          }
+          if(!(isNumeric(currentQuantity))){
+            $(".product-quantity-type-message").text("Product quantity is not"+
+                                                     " valid.");
+            $(".product-quantity-type-errors").show();
+          }
+          else{
+            $(".product-quantity-type-errors").hide();
+          }
+          if(!(isNumeric(reorderLevel))){
+            $(".product-reorder-type-message").text("Reorder level is not"+
+                                                     " valid.");
+            $(".product-reorder-type-errors").show();
+          }
+          else{
+            $(".product-reorder-type-errors").hide();
+          }
+          if(currentQuantity <= reorderLevel && isNumeric(currentQuantity)
+             && isNumeric(reorderLevel)){
+            $(".quantity-reorder-message").text("The product quantity level"+
+                                                " must be strictly greater"+
+                                                " than the reorder level.");
+            $(".quantity-reorder-errors").show();
+          }
+          else{
+            $(".quantity-reorder-errors").hide();
+          }
+          if(productThumbnail.length > 255){
+            $(".product-thumbnail-message").text("Thumbnail link must not be"+
+                                                 " more than 255 characters"+
+                                                 " long.");
+            $(".product-thumbnail-errors").show();
+          }
+          else{
+            $(".product-thumbnail-errors").hide();
+          }
+          return false;
+      }
+      return true;
+    }
+  </script>
 {% endblock %}
