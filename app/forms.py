@@ -2,7 +2,7 @@ from flask_wtf import Form
 from wtforms import StringField, PasswordField, BooleanField, TextAreaField\
                     ,IntegerField
 from wtforms.validators import DataRequired, EqualTo, Length, NumberRange\
-                               ,regexp, InputRequired
+                               ,Regexp, InputRequired
 
 class LoginForm(Form):
     username = StringField('Username', validators=[DataRequired()])
@@ -57,4 +57,9 @@ class AddProducts(Form):
                                          )])
     product_thumbnail_link = StringField('Thumbnail link',
                                           validators=[DataRequired(),
+                                          Regexp(regex="^.*\.(jpe?g|png|)$",
+                                                 message="Thumbnail links must\
+                                                          end with png, jpg or\
+                                                          jpeg extension \
+                                                          type."),
                                           Length(min=5)])

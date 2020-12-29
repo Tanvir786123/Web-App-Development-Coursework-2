@@ -5,6 +5,8 @@ from flask_admin.contrib.sqla import ModelView
 from .forms import *
 from .models import *
 from flask_login import login_user, logout_user, login_required, current_user
+import requests
+import os
 
 COOKIE_ID_KEY = 'id'
 
@@ -54,9 +56,22 @@ def index():
 def add_products():
     add_products_form = AddProducts()
     if add_products_form.validate_on_submit():
-        flash('yay')
-        return render_template('manager_add_products.html', title='Cafè Noir',
-                                form=add_products_form, status=1)
+        try:
+            response = requests.get(add_products_form.\
+                                    product_thumbnail_link.data)
+        except:
+            flash('Product thumbnail image could not be downloaded.')
+            return render_template('manager_add_products.html',
+                                    title='Cafè Noir', form=add_products_form,
+                                    status=0)
+        path = os.path.join(app.root_path, 'static', 'product_images', 'logo.png')
+        file = open(path, "wb")
+        file.write(response.content)
+        file.close()
+        flash("The product was added successfully.")
+        return render_template('manager_add_products.html',
+                                title='Cafè Noir', form=add_products_form,
+                                status=1)
     else:
         return render_template('manager_add_products.html', title='Cafè Noir',
                                 form=add_products_form, status=0)
