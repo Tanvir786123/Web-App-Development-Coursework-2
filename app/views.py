@@ -59,15 +59,15 @@ def add_products():
         try:
             response = requests.get(add_products_form.\
                                     product_thumbnail_link.data)
+            path = os.path.join(app.root_path, 'static', 'product_images', 'logo.png')
+            file = open(path, "wb")
+            file.write(response.content)
+            file.close()
         except:
             flash('Product thumbnail image could not be downloaded.')
             return render_template('manager_add_products.html',
                                     title='Cafè Noir', form=add_products_form,
                                     status=0)
-        path = os.path.join(app.root_path, 'static', 'product_images', 'logo.png')
-        file = open(path, "wb")
-        file.write(response.content)
-        file.close()
         flash("The product was added successfully.")
         return render_template('manager_add_products.html',
                                 title='Cafè Noir', form=add_products_form,
