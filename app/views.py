@@ -56,11 +56,20 @@ def index():
 def add_products():
     add_products_form = AddProducts()
     if add_products_form.validate_on_submit():
+        image_id = Product.query.count()
+        image_id = image_id + 1
         try:
+            file_name = str(image_id)
+            if ".png" in add_products_form.product_thumbnail_link.data:
+                file_name = file_name + ".png"
+            elif ".jpg" in add_products_form.product_thumbnail_link.data:
+                file_name = file_name + ".jpg"
+            elif ".jpeg" in add_products_form.product_thumbnail_link.data:
+                file_name = file_name + ".jpeg"
             response = requests.get(add_products_form.\
                                     product_thumbnail_link.data)
             path = os.path.join(app.root_path, 'static', 'product_images',
-                                'logo.png')
+                                str(file_name))
             file = open(path, "wb")
             file.write(response.content)
             file.close()
@@ -69,6 +78,19 @@ def add_products():
             return render_template('manager_add_products.html',
                                     title='Cafè Noir', form=add_products_form,
                                     status=0)
+        product = Product(product_id=image_id,
+                          product_name=add_products_form.product_name.data,
+                          product_description=add_products_form\
+                                              .product_description.data,
+                          product_quantity=add_products_form\
+                                           .product_current_quantity\
+                                           .data,
+                          product_reorder_level=add_products_form.\
+                                                product_reorder_level.data,
+                          product_thumbnail_link=add_products_form.\
+                                                 product_thumbnail_link.data)
+        db.session.add(product)
+        db.session.commit()
         flash("The product was added successfully.")
         return render_template('manager_add_products.html',
                                 title='Cafè Noir', form=add_products_form,

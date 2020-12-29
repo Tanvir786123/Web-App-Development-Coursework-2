@@ -9,9 +9,25 @@ class Account(enum.Enum):
     MANAGER_ACCOUNT = 3
     CONTROLLER_ACCOUNT = 4
 
+transaction_table = db.Table('transaction_table', db.Model.metadata,
+    db.Column('transaction_id', db.Integer, primary_key=True, index=True),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.product_id')),
+    db.Column('username', db.String(255), db.ForeignKey('user.username'))
+)
+
+class Product(db.Model):
+    product_id = db.Column(db.Integer, primary_key=True, index=True)
+    product_name = db.Column(db.String(255))
+    product_description = db.Column(db.String(255))
+    product_quantity = db.Column(db.Integer)
+    product_reorder_level = db.Column(db.Integer)
+    product_thumbnail_link = db.Column(db.String(255))
+    purchases = db.relationship('User', secondary=transaction_table)
+
 class User(db.Model, UserMixin):
     username = db.Column(db.String(255), primary_key=True, index=True)
     password = db.Column(db.String(255), index=True, nullable=False)
+    products_bought = db.relationship('Product', secondary=transaction_table)
 
     acc_type = Account.USER_ACCOUNT
 
