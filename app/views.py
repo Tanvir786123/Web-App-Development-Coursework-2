@@ -7,8 +7,12 @@ from .models import *
 from flask_login import login_user, logout_user, login_required, current_user
 import requests
 import os
+import enum
 
 COOKIE_ID_KEY = 'id'
+PNG = 1
+JPG = 2
+JPEG = 3
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -23,7 +27,6 @@ def index():
             pass
         elif current_user.account_type() == Account.CONTROLLER_ACCOUNT:
             return redirect(url_for('admin.index'))
-
     login_form = LoginForm()
     if login_form.validate_on_submit():
         login_form.username.data = login_form.username.data.lower()
@@ -46,14 +49,24 @@ def index():
             flash('You are a staff member')
         elif user and user.verify_password(login_form.password.data):
             login_user(user, remember=login_form.remember_me.data)
-            flash('You are a user')
+            return redirect(url_for('user_home'))
         else:
             flash("Incorrect username or password")
     return render_template('index.html', title='Cafè Noir', form=login_form)
 
+@app.route('/user/home')
+@login_required
+def user_home():
+    if not current_user.account_type() == Account.USER_ACCOUNT:
+        return redirect(url_for('logout'))
+    products = Product.query.all()
+    return render_template('user_base.html', title='Cafè Noir', products=products)
+
 @app.route('/manager/add_products', methods=['GET', 'POST'])
 @login_required
 def add_products():
+    if not current_user.account_type() == Account.MANAGER_ACCOUNT:
+        return redirect(url_for('logout'))
     add_products_form = AddProducts()
     if add_products_form.validate_on_submit():
         image_id = Product.query.count()
@@ -62,10 +75,13 @@ def add_products():
             file_name = str(image_id)
             if ".png" in add_products_form.product_thumbnail_link.data:
                 file_name = file_name + ".png"
+                type = PNG
             elif ".jpg" in add_products_form.product_thumbnail_link.data:
                 file_name = file_name + ".jpg"
+                type = JPG
             elif ".jpeg" in add_products_form.product_thumbnail_link.data:
                 file_name = file_name + ".jpeg"
+                type = JPEG
             response = requests.get(add_products_form.\
                                     product_thumbnail_link.data)
             path = os.path.join(app.root_path, 'static', 'product_images',
@@ -88,7 +104,8 @@ def add_products():
                           product_reorder_level=add_products_form.\
                                                 product_reorder_level.data,
                           product_thumbnail_link=add_products_form.\
-                                                 product_thumbnail_link.data)
+                                                 product_thumbnail_link.data,
+                          product_thumbnail_type=type)
         db.session.add(product)
         db.session.commit()
         flash("The product was added successfully.")
@@ -102,6 +119,8 @@ def add_products():
 @app.route('/change_manager_password/<user_id>', methods=['GET', 'POST'])
 @login_required
 def change_manager_password(user_id):
+    if not current_user.account_type() == Account.MANAGER_ACCOUNT:
+        return redirect(url_for('logout'))
     change_password_form = ChangeMyPasswordForm()
     if change_password_form.validate_on_submit():
         cookie_id = request.cookies.get('id')

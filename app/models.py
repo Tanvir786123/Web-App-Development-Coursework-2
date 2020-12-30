@@ -22,6 +22,7 @@ class Product(db.Model):
     product_quantity = db.Column(db.Integer)
     product_reorder_level = db.Column(db.Integer)
     product_thumbnail_link = db.Column(db.String(255))
+    product_thumbnail_type = db.Column(db.Integer)
     purchases = db.relationship('User', secondary=transaction_table)
 
 class User(db.Model, UserMixin):

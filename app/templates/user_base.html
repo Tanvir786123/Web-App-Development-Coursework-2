@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block user_stylesheet %}
+  <link rel="stylesheet" href="../static/user_base.css">
+{% endblock %}
+
+{% block content %}
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light font-weight-bold">
+      <a href="/user/home" class="navbar-brand">
+        <img src="../static/cafe_noir_logo.png" width="120" alt=""
+             class="d-inline-block align-middle mr-2">
+        <span class="text-uppercase font-weight-bold">{{ title }}</span>
+      </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarText" aria-controls="navbarText"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button"
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            View
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">My basket</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button"
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Help
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item"
+               href="#">
+               Change my password</a>
+          </div>
+        </li>
+      </ul>
+      <span class="navbar-text">
+        <a class="nav-link" href="/logout">Logout
+          <span class="sr-only">(current)</span>
+        </a>
+      </span>
+    </div>
+  </nav>
+  <br><br>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+		      <table class="table table-image table-hover table-primary w-75">
+            <thead>
+              <tr>
+                <th scope="col">Product name</th>
+                <th scope="col">Product description</th>
+                <th scope="col">Image of product</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+              <tr>
+                <th scope="row">{{ product.product_name }}</th>
+                <td>{{ product.product_description }}</td>
+                <td class="w-25">
+                  {% if product.product_thumbnail_type == 1 %}
+                    <img src="../static/product_images/{{ loop.index }}.png"
+                     class="img-fluid img-thumbnail"
+                     alt="Coffee product">
+                  {% elif product.product_thumbnail_type == 2 %}
+                    <img src="../static/product_images/{{ loop.index }}.jpg"
+                     class="img-fluid img-thumbnail"
+                     alt="Coffee product">
+                  {% elif product.product_thumbnail_type == 3 %}
+                    <img src="../static/product_images/{{ loop.index }}.jpeg"
+                     class="img-fluid img-thumbnail"
+                     alt="Coffee product">
+                  {% else %}
+                    <img src="" class="img-fluid img-thumbnail"
+                     alt="Coffee product">
+                  {% endif %}
+                </td>
+                <td>
+                  <input autocomplete="off" class="quantity-field"
+                         placeholder="Quantity" required type="text">
+                  <form method="post">
+                    <input type="submit" value="Add to basket">
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(document).ready(function(){
+        function toggleNavbarMethod(){
+          if ($(window).width() > 768){
+            $('.navbar .dropdown').on('mouseover', function(){
+              $('.dropdown-toggle', this).trigger('click');
+            }).on('mouseout', function(){
+              $('.dropdown-toggle', this).trigger('click').blur();
+            });
+          }
+          else{
+            $('.navbar .dropdown').off('mouseover').off('mouseout');
+          }
+        }
+        toggleNavbarMethod();
+        $(window).resize(toggleNavbarMethod);
+      });
+    </script>
+    {% block user_content %} {% endblock %}
+</body>
+{% endblock %}

@@ -59,7 +59,11 @@ class AddProducts(Form):
                                           validators=[DataRequired(),
                                           Regexp(regex="^.*\.(jpe?g|png|)$",
                                                  message="Thumbnail links must\
-                                                          end with png, jpg or\
-                                                          jpeg extension \
-                                                          type."),
+                                                          have their extension\
+                                                          types lower-case,\
+                                                          e.g. '.png', '.jpg'\
+                                                          or .jpeg are the only\
+                                                          file-types supported\
+                                                          at this moment in\
+                                                          time."),
                                           Length(min=5)])

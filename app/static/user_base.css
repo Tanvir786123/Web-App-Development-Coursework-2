@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: linear-gradient(to left, #667eea, #764ba2)
+}
+
+.navbar {
+  background-color: #e3f2fd;
+}
+
+.navbar a {
+  color: #09429e !important;
+  border-bottom: 3px solid transparent;
+}
+
+.navbar a:hover {
+  border-bottom: 3px solid green;
+}
+
+.navbar a:active {
+  background-color: #2ecc71;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.container {
+  padding: 2rem 0rem;
+}
+
+h4 {
+  margin: 2rem 0rem 1rem;
+}
+
+.table {
+    border-radius: 5px;
+    width: 50%;
+    margin: auto;
+    float: none;
+}
+
+input[type="text"] {
+    border: 0;
+    background: none;
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    border: 2px solid #000080;
+    padding: 10px 10px;
+    width: 250px;
+    outline: none;
+    color: #000000;
+    border-radius: 24px;
+    transition: 0.25s
+}
+
+input[type="submit"] {
+    border: 0;
+    background: #FFFFFF;
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    border: 2px solid #000080;
+    padding: 14px 40px;
+    outline: none;
+    color: #000000;
+    border-radius: 24px;
+    transition: 0.25s;
+    cursor: pointer
+}
+
+input[type="text"]:focus {
+    width: 300px;
+    border-color: #068009;
+}
+
+input[type="text"]:hover {
+    width: 300px;
+    border-color: #068009;
+}
+
+input[type="submit"]:focus {
+  background: #2ecc71;
+}
+
+input[type="submit"]:hover {
+  background: #2ecc71;
+}
+
+::placeholder {
+  color: #000000;
+}
+
+:-ms-input-placeholder {
+  color: #000000;
+}
+
+::-ms-input-placeholder {
+  color: #000000;
+}
