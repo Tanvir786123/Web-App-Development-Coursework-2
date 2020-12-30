@@ -7,9 +7,8 @@ from .models import *
 from flask_login import login_user, logout_user, login_required, current_user
 import requests
 import os
-import enum
 
-COOKIE_ID_KEY = 'id'
+COOKIE_MANAGER_ID_KEY = 'id'
 PNG = 1
 JPG = 2
 JPEG = 3
@@ -54,20 +53,22 @@ def index():
             flash("Incorrect username or password")
     return render_template('index.html', title='Cafè Noir', form=login_form)
 
-@app.route('/user/home')
+@app.route('/user/home', methods=['GET', 'POST'])
 @login_required
 def user_home():
     if not current_user.account_type() == Account.USER_ACCOUNT:
         return redirect(url_for('logout'))
+    form = QuantityForm()
     products = Product.query.all()
-    return render_template('user_base.html', title='Cafè Noir', products=products)
+    return render_template('user_index.html', title='Cafè Noir',
+                            products=products, form=form)
 
 @app.route('/manager/add_products', methods=['GET', 'POST'])
 @login_required
 def add_products():
     if not current_user.account_type() == Account.MANAGER_ACCOUNT:
         return redirect(url_for('logout'))
-    add_products_form = AddProducts()
+    add_products_form = AddProductsForm()
     if add_products_form.validate_on_submit():
         image_id = Product.query.count()
         image_id = image_id + 1
@@ -123,7 +124,7 @@ def change_manager_password(user_id):
         return redirect(url_for('logout'))
     change_password_form = ChangeMyPasswordForm()
     if change_password_form.validate_on_submit():
-        cookie_id = request.cookies.get('id')
+        cookie_id = request.cookies.get(COOKIE_MANAGER_ID_KEY)
         if cookie_id and cookie_id == user_id:
             manager = Manager.query.filter_by(username=cookie_id).first()
             if manager:
@@ -155,11 +156,12 @@ def change_manager_password(user_id):
 @login_required
 def manager():
     if current_user.account_type() == Account.MANAGER_ACCOUNT:
-        cookie_id = request.cookies.get(COOKIE_ID_KEY)
+        cookie_id = request.cookies.get(COOKIE_MANAGER_ID_KEY)
         if not cookie_id:
             res = make_response(render_template('manager_index.html',
                                                  title='Cafè Noir'))
-            res.set_cookie(COOKIE_ID_KEY, current_user.get_id(), httponly=True)
+            res.set_cookie(COOKIE_MANAGER_ID_KEY, current_user.get_id(),
+                           httponly=True)
             return res
         else:
             return render_template('manager_index.html', title='Cafè Noir')
@@ -229,10 +231,10 @@ def signup():
 @login_required
 def logout():
     logout_user()
-    cookie_id = request.cookies.get(COOKIE_ID_KEY)
+    cookie_id = request.cookies.get(COOKIE_MANAGER_ID_KEY)
     if cookie_id:
         res = make_response(redirect(url_for('index')))
-        res.set_cookie(COOKIE_ID_KEY, '', expires=0)
+        res.set_cookie(COOKIE_MANAGER_ID_KEY, '', expires=0)
         return res
     return redirect(url_for('index'))
 

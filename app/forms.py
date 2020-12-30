@@ -37,7 +37,7 @@ class ChangeMyPasswordForm(Form):
     confirmed_password = PasswordField('Confirm password',
                                         validators=[DataRequired()])
 
-class AddProducts(Form):
+class AddProductsForm(Form):
     product_name = StringField('Product name', validators=[DataRequired(),
                                 Length(min=5)])
     product_description = TextAreaField('Product description',
@@ -66,4 +66,7 @@ class AddProducts(Form):
                                                           file-types supported\
                                                           at this moment in\
                                                           time."),
-                                          Length(min=5)])
+                                                          Length(min=5)])
+
+class QuantityForm(Form):
+    quantity = IntegerField('Quantity', validators=[InputRequired()])

@@ -1,0 +1,75 @@
+{% extends "user_base.html" %}
+
+{% block user_index_stylesheet %}
+  <link rel="stylesheet" href="../static/user_index.css">
+{% endblock %}
+
+{% block user_content %}
+  {% for product in products %}
+  <tr>
+    <th scope="row">{{ product.product_name }}</th>
+    <td>{{ product.product_description }}</td>
+    <td class="w-25">
+      {% if product.product_thumbnail_type == 1 %}
+        <img src="../static/product_images/{{ loop.index }}.png"
+             class="img-fluid img-thumbnail w-75"
+             alt="Coffee product">
+      {% elif product.product_thumbnail_type == 2 %}
+        <img src="../static/product_images/{{ loop.index }}.jpg"
+             class="img-fluid img-thumbnail w-75"
+             alt="Coffee product">
+      {% elif product.product_thumbnail_type == 3 %}
+        <img src="../static/product_images/{{ loop.index }}.jpeg"
+             class="img-fluid img-thumbnail w-75"
+             alt="Coffee product">
+      {% else %}
+        <img src="" class="img-fluid img-thumbnail w-75"
+             alt="Coffee product">
+      {% endif %}
+    </td>
+    <td>
+      <form method="post" onsubmit="return validateQuantityForm()">
+        {{ form.csrf_token(id=product.product_id ) }}
+        {{ form.quantity(autocomplete="off", class="quantity-field",
+                         id=product.product_id*4, placeholder="Quantity" )}}
+        <input type="submit" value="Add to basket">
+        <div class="alert alert-danger centre {{ loop.index }}" role="alert">
+          <div class="message-errors">
+            <p>Invalid quantity entered.</p>
+          </div>
+        </div>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  <script>
+     $(document).ready(function(){
+       $(".alert").hide();
+     });
+     function validateQuantityForm(){
+       var index = 0;
+       var failed = 0;
+       $("input[type=text]").each(function(){
+         var str = String((index+1));
+         var classSymbol = ".";
+         var retStr = classSymbol.concat(str);
+         if(!isNaN(this.value) && this.value > 0){
+            $(retStr).hide();
+         }
+         else{
+           if(this.value != ""){
+             $(retStr).show();
+             failed = 1;
+           }
+         }
+         ++index;
+       });
+       if(failed == 0){
+         return true;
+       }
+       else{
+         return false;
+       }
+     }
+   </script>
+{% endblock %}
