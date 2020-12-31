@@ -29,14 +29,20 @@
     </td>
     <td>
       <div class="content">
-        <form method="post"">
+        <form>
           {{ form.csrf_token(id=product.product_id ) }}
           {{ form.quantity(autocomplete="off", class="quantity-field",
                            id=product.product_id*4, placeholder="Quantity" )}}
+          {{ form.product_id(autocomplete="off", class="product-id" )}}
           <input type="submit" value="Add to basket" class="submit-button">
           <div class="alert alert-danger centre {{ loop.index }}" role="alert">
             <div class="message-errors">
-              <p>Invalid quantity entered.</p>
+              <p class="text-errors"></p>
+            </div>
+          </div>
+          <div class="alert alert-success" role="alert">
+            <div class="message-success">
+              <p class="text-success"></p>
             </div>
           </div>
         </form>
@@ -46,52 +52,67 @@
   {% endfor %}
   <script>
     $(document).ready(function(){
-      $(".alert").hide();
-    });
-    $(document).on("click", ".submit-button", function (e) {
-      var val = $(this).closest("div.content").find(".quantity-field").val();
-      var row = $(this).closest("tr").index() + 1;
-      var classSymbol = ".";
-      var retStr = classSymbol.concat(row);
-      if(isNaN(val) && val != ""){
-        $(this).closest("div.content").find(".quantity-field").focus();
-        $(retStr).show();
-        return false;
-      }
-      else{
-        $(retStr).hide();
-        if(validateQuantityForm()){
-          return true;
-        }
-        else{
-          return false;
-        }
-      }
-    });
-    function validateQuantityForm(){
-      var index = 0;
-      var failed = false;
-      $("input[type=text]").each(function(){
-        var str = String((index+1));
-        var classSymbol = ".";
-        var retStr = classSymbol.concat(str);
-        if(!isNaN(this.value) && this.value > 0){
-          $(retStr).hide();
-        }
-        else{
-          if(this.value != ""){
-            $(retStr).show();
-            failed = true;
+      $(".alert-danger").hide();
+      $(".product-id").hide();
+      // Inject our CSRF token into our AJAX request.
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)
+              && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken",
+                                 "{{ form.csrf_token._value() }}")
           }
         }
-        ++index;
+      })
+      $(document).on("click", ".submit-button", function (e){
+        var val = $(this).closest("div.content").find(".quantity-field").val();
+        if(val == ""){
+          $(this).closest("div.content").find(".quantity-field").focus();
+          return;
+        }
+        var row = $(this).closest("tr").index() + 1;
+        var classSymbol = ".";
+        var retStr = classSymbol.concat(row);
+        if(isNaN(val)){
+          $(this).closest("div.content").find(".quantity-field").focus();
+          $(".text-errors").text("Invalid quantity supplied.");
+          $(retStr).show();
+        }
+        else{
+          if(val < 1){
+            $(this).closest("div.content").find(".quantity-field").focus();
+            $(".text-errors").text("No items selected.");
+            $(retStr).show();
+          }
+          else if(val > 25){
+            $(this).closest("div.content").find(".quantity-field").focus();
+            $(".text-errors").text("Order limit exceeded.");
+            $(retStr).show();
+          }
+          else{
+            $(this).closest("div.content").find(".product-id").val(row);
+            var url = "{{ url_for('user_order') }}"; // send the form data here.
+              $.ajax({
+                  type: "POST",
+                  url: url,
+                  data: $('form').serialize(), // serializes the form's elements.
+                  success: function (data) {
+                    $(".text-success").text("Order has been placed in basket.");
+                    $(this).closest("alert-success").show();
+                  },
+                  error: function(error){
+                    $(".text-errors").text("Insufficient stock available.");
+                    $(retStr).show();
+                  }
+              });
+            $(this).closest("div.content").find(".quantity-field").focus();
+            $(this).closest("div.content").find(".quantity-field").blur();
+            $(this).closest("div.content").find(".quantity-field").val("");
+            $(retStr).hide();
+          }
+        }
+        e.preventDefault();
       });
-      if(failed == false){
-        return true;
-      }
-      else{
-        return false;
-      }
-    }
+    });
    </script>
 {% endblock %}

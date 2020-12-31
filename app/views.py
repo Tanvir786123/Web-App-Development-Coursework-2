@@ -5,8 +5,9 @@ from flask_admin.contrib.sqla import ModelView
 from .forms import *
 from .models import *
 from flask_login import login_user, logout_user, login_required, current_user
-import requests
 import os
+import json
+
 
 COOKIE_MANAGER_ID_KEY = 'id'
 PNG = 1
@@ -52,6 +53,23 @@ def index():
         else:
             flash("Incorrect username or password")
     return render_template('index.html', title='Cafè Noir', form=login_form)
+
+@app.route('/user/order', methods=['POST'])
+@login_required
+def user_order():
+    if not current_user.account_type() == Account.USER_ACCOUNT:
+        return redirect(url_for('logout'))
+    order_form = QuantityForm()
+    if order_form.validate_on_submit():
+        product = Product.query.get(order_form.product_id.data)
+        if not product:
+            return "Server error", 500
+        else:
+            if product.product_quantity >= order_form.quantity.data:
+                return "OK", 200
+            else:
+                return "Insufficient stock available", 400
+    return "Server error", 500
 
 @app.route('/user/home', methods=['GET', 'POST'])
 @login_required
