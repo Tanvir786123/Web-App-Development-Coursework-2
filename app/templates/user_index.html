@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block user_content %}
+  {% set count = namespace(value=5) %}
   {% for product in products %}
   <tr>
     <th scope="row">{{ product.product_name }}</th>
@@ -33,18 +34,19 @@
           {{ form.csrf_token(id=product.product_id ) }}
           {{ form.quantity(autocomplete="off", class="quantity-field",
                            id=product.product_id*4, placeholder="Quantity" )}}
-          {{ form.product_id(autocomplete="off", class="product-id" )}}
-          <input type="submit" value="Add to basket" class="submit-button">
+          {{ form.product_id(autocomplete="off", class="product-id",
+                             id=product.product_id*11)}}
+          {% set buttonid = loop.index * 16 %}
+          <input type="submit" value="Add to basket" class="submit-button"
+                 id={{ buttonid }}>
           <div class="alert alert-danger centre {{ loop.index }}" role="alert">
-            <div class="message-errors">
-              <p class="text-errors"></p>
-            </div>
+            <p class="text-errors"></p>
           </div>
-          <div class="alert alert-success" role="alert">
-            <div class="message-success">
-              <p class="text-success"></p>
-            </div>
+          <div class="alert alert-success centre {{ count.value }}"
+               role="alert">
+            <p class="text-success"></p>
           </div>
+          {% set count.value = count.value + 5 %}
         </form>
       </div>
     </td>
@@ -52,7 +54,7 @@
   {% endfor %}
   <script>
     $(document).ready(function(){
-      $(".alert-danger").hide();
+      $(".alert").hide();
       $(".product-id").hide();
       // Inject our CSRF token into our AJAX request.
       $.ajaxSetup({
@@ -71,44 +73,48 @@
           return;
         }
         var row = $(this).closest("tr").index() + 1;
-        var classSymbol = ".";
-        var retStr = classSymbol.concat(row);
+        var classSymbol = "."
+        var identifierSymbol = "#";
+        var retErrorStr = classSymbol.concat(row);
+        var retSuccessStr = classSymbol.concat(row*5);
+        var retButtonIdentifier = identifierSymbol.concat(row*16);
+        var retTextIdentifier = identifierSymbol.concat(row*4);
         if(isNaN(val)){
           $(this).closest("div.content").find(".quantity-field").focus();
           $(".text-errors").text("Invalid quantity supplied.");
-          $(retStr).show();
+          $(retErrorStr).show();
         }
         else{
           if(val < 1){
             $(this).closest("div.content").find(".quantity-field").focus();
             $(".text-errors").text("No items selected.");
-            $(retStr).show();
+            $(retErrorStr).show();
           }
           else if(val > 25){
             $(this).closest("div.content").find(".quantity-field").focus();
             $(".text-errors").text("Order limit exceeded.");
-            $(retStr).show();
+            $(retErrorStr).show();
           }
           else{
             $(this).closest("div.content").find(".product-id").val(row);
-            var url = "{{ url_for('user_order') }}"; // send the form data here.
+            var url = "{{ url_for('user_order') }}";
               $.ajax({
                   type: "POST",
                   url: url,
-                  data: $('form').serialize(), // serializes the form's elements.
-                  success: function (data) {
+                  data: $(this).closest("form").serialize(),
+                  success: function(data){
                     $(".text-success").text("Order has been placed in basket.");
-                    $(this).closest("alert-success").show();
+                    $(retSuccessStr).show();
+                    $(this).closest("div.content").find(".product-id").val(row);
+                    $(retButtonIdentifier).attr("disabled", true);
+                    $(retTextIdentifier).attr("disabled", true)
                   },
                   error: function(error){
                     $(".text-errors").text("Insufficient stock available.");
-                    $(retStr).show();
+                    $(retErrorStr).show();
                   }
               });
-            $(this).closest("div.content").find(".quantity-field").focus();
-            $(this).closest("div.content").find(".quantity-field").blur();
-            $(this).closest("div.content").find(".quantity-field").val("");
-            $(retStr).hide();
+            $(retErrorStr).hide();
           }
         }
         e.preventDefault();
