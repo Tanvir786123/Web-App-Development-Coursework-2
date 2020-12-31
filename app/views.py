@@ -1,5 +1,6 @@
 from flask import render_template, flash, redirect, url_for, make_response,\
                   request
+import requests
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
 from .forms import *

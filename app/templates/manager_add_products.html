@@ -148,6 +148,8 @@
       var productName = $("#product-name-field").val();
       var productDesc = $("#product-description-field").val();
       var productThumbnail = $("#product-thumbnail-field").val();
+      currentQuantity = Number(currentQuantity);
+      reorderLevel = Number(reorderLevel);
       if((currentQuantity <= reorderLevel) || (productName.length > 255)
         ||(productDesc.length > 255) || (productThumbnail.length > 255)
         || !(isNumeric(currentQuantity)) || !(isNumeric(reorderLevel))){
