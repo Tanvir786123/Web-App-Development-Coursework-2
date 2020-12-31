@@ -63,13 +63,16 @@ def user_order():
     if order_form.validate_on_submit():
         product = Product.query.get(order_form.product_id.data)
         if not product:
-            return "Server error", 500
+            return json.dumps({'status': 'Server error'}), 500
         else:
             if product.product_quantity >= order_form.quantity.data:
-                return "OK", 200
+                return json.dumps({'status': 'OK'}), 200
             else:
-                return "Insufficient stock available", 400
-    return "Server error", 500
+                return json.dumps({'status': 'Insufficient stock available'})\
+                                    ,400
+
+    return json.dumps({'status': 'Server error'}), 500
+
 
 @app.route('/user/home', methods=['GET', 'POST'])
 @login_required

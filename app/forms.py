@@ -69,5 +69,5 @@ class AddProductsForm(Form):
                                                           Length(min=5)])
 
 class QuantityForm(Form):
-    product_id = IntegerField('Product Id', validators=[InputRequired()])
+    product_id = IntegerField('Product Id')
     quantity = IntegerField('Quantity', validators=[InputRequired()])

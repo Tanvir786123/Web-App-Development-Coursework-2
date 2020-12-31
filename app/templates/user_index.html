@@ -105,12 +105,13 @@
                   success: function(data){
                     $(".text-success").text("Order has been placed in basket.");
                     $(retSuccessStr).show();
-                    $(this).closest("div.content").find(".product-id").val(row);
                     $(retButtonIdentifier).attr("disabled", true);
-                    $(retTextIdentifier).attr("disabled", true)
+                    $(retTextIdentifier).attr("disabled", true);
                   },
                   error: function(error){
-                    $(".text-errors").text("Insufficient stock available.");
+                    var err = JSON.parse(error.responseText);
+                    var errorStr = err.status;
+                    $(".text-errors").text(errorStr);
                     $(retErrorStr).show();
                   }
               });
