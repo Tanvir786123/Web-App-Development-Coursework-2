@@ -1,0 +1,189 @@
+{% extends "user_base.html" %}
+
+{% block user_view_basket_stylesheet %}
+  <link rel="stylesheet" href="../static/user_view_basket.css">
+{% endblock %}
+
+{% block quantity_header %}
+  <th scope="col" class="quantity-header">Quantity</th>
+{% endblock %}
+
+{% block user_content %}
+  {% set count = namespace(value=5) %}
+  {% for product in products %}
+  <tr>
+    <th scope="row">{{ product.product_name }}</th>
+    <td>{{ product.product_description }}</td>
+    <td class="w-25">
+      {% if product.product_thumbnail_type == 1 %}
+        <img src="../static/product_images/{{ loop.index }}.png"
+             class="img-fluid img-thumbnail w-75"
+             alt="Coffee product">
+      {% elif product.product_thumbnail_type == 2 %}
+        <img src="../static/product_images/{{ loop.index }}.jpg"
+             class="img-fluid img-thumbnail w-75"
+             alt="Coffee product">
+      {% elif product.product_thumbnail_type == 3 %}
+        <img src="../static/product_images/{{ loop.index }}.jpeg"
+             class="img-fluid img-thumbnail w-75"
+             alt="Coffee product">
+      {% else %}
+        <img src="" class="img-fluid img-thumbnail w-75"
+             alt="Coffee product">
+      {% endif %}
+    </td>
+    <td>£{{ product.product_price }}</td>
+    <td id={{ count.value }}>{{ product.quantity }}</td>
+    <td>
+      <div class="content">
+        <form onsubmit="return validateForm()" class="my-form">
+          {{ form.csrf_token(id=product.product_id ) }}
+          {{ form.quantity(autocomplete="off", class="quantity-field",
+                           id=product.product_id*4, value=product.quantity )}}
+          <input type="submit" value="Change quantity" class="alter-quantity"
+                 >
+          <input type="submit" value="Confirm quantity" class="confirm-quantity"
+                 >
+          <div class="alert alert-danger centre {{ loop.index }}" role="alert">
+            <p class="text-errors"></p>
+          </div>
+          <div class="alert alert-success centre {{ count.value }}"
+               role="alert">
+            <p class="text-success"></p>
+          </div>
+          {% set count.value = count.value + 5 %}
+        </form>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+  <div class="confirmation">
+    <input type="submit" value="Confirm purchase" class="form-submit"
+           id="final-submit">
+    <div class="alert alert-success centre user-success"
+         role="alert">
+         <p class="text-success"></p>
+    </div>
+    <div class="alert alert-danger centre user-error" role="alert">
+      <p class="text-errors"></p>
+    </div>
+    <form>
+      {{ receipt.csrf_token }}
+      {{ receipt.receipt(class="receipt") }}
+      <label class="text-color receipt" for="receipt">
+        Get a digital copy of your receipt?
+      </label>
+    </form>
+  </div>
+  <script>
+    $(document).ready(function(){
+      $(".alert").hide();
+      $(".confirm-quantity").hide();
+      $(".quantity-field").hide();
+      $(".receipt").show();
+      // Inject our CSRF token into our AJAX request.
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings){
+          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)
+              && !this.crossDomain){
+            xhr.setRequestHeader("X-CSRFToken",
+                                 "{{ form.csrf_token._value() }}")
+          }
+        }
+      })
+      $(document).on("click", ".alter-quantity", function (e){
+        $(this).closest("div.content").find(".quantity-field").show();
+        $(this).closest("div.content").find(".quantity-field").focus();
+        $("#final-submit").hide();
+        $(this).hide();
+        $(this).closest("div.content").find(".confirm-quantity").show();
+        e.preventDefault();
+      });
+      $(document).on("click", ".confirm-quantity", function(e){
+        var index = $(this).closest('td').parent()[0].sectionRowIndex;
+        ++index;
+        index = index * 5;
+        var identifierSymbol = '#'
+        var retStr = identifierSymbol + index;
+        e.preventDefault();
+        var val = $(this).closest("div.content").find(".quantity-field").val();
+        if(val == ""){
+          $(this).closest("div.content").find(".quantity-field").focus();
+          return;
+        }
+        val = Number(val);
+        if(isNaN(val) || val < 0){
+          $(".text-errors").text("Invalid quantity supplied.");
+          $(this).closest("div.content").find(".alert-danger").show();
+          $(this).closest("div.content").find(".quantity-field").focus();
+          return false;
+        }
+        else{
+          $(this).closest("div.content").find(".alert-danger").hide();
+        }
+        if(val > 25){
+          $(".text-errors").text("Order limit exceeded.");
+          $(this).closest("div.content").find(".alert-danger").show();
+          $(this).closest("div.content").find(".quantity-field").focus();
+          return false;
+        }
+        else{
+          $(this).closest("div.content").find(".alert-danger").hide();
+        }
+        $(this).closest("div.content").find(".alert-danger").hide();
+        $(this).hide();
+        $(this).closest("div.content").find(".alter-quantity").show();
+        $(this).closest("div.content").find(".quantity-field").hide();
+        $("#final-submit").show();
+        $(this).closest("div.content").find(".quantity-field")
+               .attr('value', val);
+        $(retStr).html(val);
+      });
+      $("#final-submit").click(function(e){
+        $(".receipt").hide();
+        var dataArray = new Object();
+        var counter = 0;
+        $(".my-form input[type=text]").each(function(){
+          var id = $(this).attr('id');
+          id = id / 4;
+          var value = $(this).attr('value');
+          value = value + "-" + id;
+          dataArray[counter] = value;
+          counter = counter + 1;
+       });
+       if($(".receipt").prop("checked") == true){
+         dataArray['remember'] = true;
+       }
+       else{
+         dataArray['remember'] = false;;
+       }
+        $(this).blur();
+        e.preventDefault();
+        var url = "{{ url_for('confirm_basket') }}";
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: dataArray,
+            success: function(data){
+              var obj = JSON.parse(data);
+              var message = obj['status'];
+              $(".text-success").text(message);
+              $(".user-success").show();
+              window.setTimeout(function(){
+                window.location.href = "/delete/basket";
+              }, 10000);
+            },
+            error: function(error){
+              var err = JSON.parse(error.responseText);
+              var errorStr = err.status;
+              $(".text-errors").text(errorStr);
+              $(".user-error").show();
+              window.setTimeout(function(){
+                window.location.href = "/delete/basket";
+              }, 10000);
+            }
+        });
+      });
+    });
+  </script>
+{% endblock %}

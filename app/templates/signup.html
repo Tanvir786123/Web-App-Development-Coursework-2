@@ -32,6 +32,13 @@
                 {{ error }}
               </div>
             {% endfor %}
+            {{ form.email(autocomplete="email", id="email-field",
+                             placeholder="Email" )}}
+            {% for error in form.email.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
             {{ form.password(autocomplete="new-password", id="password-field",
                              placeholder="New password" )}}
             {{ form.confirmed_password(autocomplete="new-password",
@@ -77,6 +84,7 @@
   <script>
   $(document).ready(function(){
     $("#username-field").val("");
+    $("#email-field").val("");
     $("#username-field").focus();
     $(".client-id-errors").hide();
     $(".client-password-errors").hide();

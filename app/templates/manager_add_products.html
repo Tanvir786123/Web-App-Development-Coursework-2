@@ -43,6 +43,14 @@
                       <p class="product-description-message"></p>
                     </div>
                   </div>
+                  {{ form.product_price(autocomplete="off",
+                                       id="product-price-field",
+                                       placeholder="Product price" )}}
+                  {% for error in form.product_price.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ error }}
+                    </div>
+                  {% endfor %}
                   {{ form.product_current_quantity(autocomplete="off",
                                                    id="product-quantity-field",
                                                    placeholder=
@@ -134,6 +142,7 @@
       {% if status %}
         $("#product-name-field").val("");
         $("#product-description-field").val("");
+        $("#product-price-field").val("");
         $("#product-quantity-field").val("");
         $("#product-reorder-field").val("");
         $("#product-thumbnail-field").val("");

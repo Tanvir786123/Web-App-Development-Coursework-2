@@ -10,31 +10,54 @@ class Account(enum.Enum):
     CONTROLLER_ACCOUNT = 4
 
 transaction_table = db.Table('transaction_table', db.Model.metadata,
-    db.Column('transaction_id', db.Integer, primary_key=True, index=True),
     db.Column('product_id', db.Integer, db.ForeignKey('product.product_id')),
-    db.Column('username', db.String(255), db.ForeignKey('user.username'))
+    db.Column('username', db.String(255), db.ForeignKey('user.username')),
+    db.Column('quantity', db.Integer),
+    db.Column('sub_cost', db.Integer),
+    db.Column('date', db.DateTime)
 )
+
+class Basket(db.Model):
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.username'),
+                         primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'),
+                           primary_key=True)
+    product_name = db.Column(db.String(255))
+    product_description = db.Column(db.String(255))
+    product_price = db.Column(db.Float)
+    product_thumbnail_type = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+
+    def __repr__(self):
+        return str(self.owner_id) + " " + str(self.product_id) + " "\
+                   + str(self.quantity)
 
 class Product(db.Model):
     product_id = db.Column(db.Integer, primary_key=True, index=True)
     product_name = db.Column(db.String(255))
     product_description = db.Column(db.String(255))
+    product_price = db.Column(db.Float)
     product_quantity = db.Column(db.Integer)
     product_reorder_level = db.Column(db.Integer)
     product_thumbnail_link = db.Column(db.String(255))
     product_thumbnail_type = db.Column(db.Integer)
     purchases = db.relationship('User', secondary=transaction_table)
 
+    def __repr__(self):
+        return str(self.product_id) + " " + str(self.product_name)
+
 class User(db.Model, UserMixin):
     username = db.Column(db.String(255), primary_key=True, index=True)
     password = db.Column(db.String(255), index=True, nullable=False)
+    email = db.Column(db.String(255), unique=True)
     products_bought = db.relationship('Product', secondary=transaction_table)
 
     acc_type = Account.USER_ACCOUNT
 
-    def __init__(self, username, password, active=True):
+    def __init__(self, username, password, email, active=True):
         self.username = username
         self.password = generate_password_hash(password)
+        self.email = email
         self.active = active
 
     def is_active(self):

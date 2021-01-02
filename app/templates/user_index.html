@@ -4,6 +4,12 @@
   <link rel="stylesheet" href="../static/user_index.css">
 {% endblock %}
 
+{% block quantity_header %}
+  <th scope="col" class="quantity-header">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quantity</th>
+{% endblock %}
+
 {% block user_content %}
   {% set count = namespace(value=5) %}
   {% for product in products %}
@@ -28,6 +34,7 @@
              alt="Coffee product">
       {% endif %}
     </td>
+    <td>£{{ product.product_price }}</td>
     <td>
       <div class="content">
         <form>
@@ -68,6 +75,9 @@
       })
       $(document).on("click", ".submit-button", function (e){
         var val = $(this).closest("div.content").find(".quantity-field").val();
+        var buttonid = $(this).attr('id');
+        var quantityid = $(this).closest("div.content").find(".quantity-field")
+                                .attr('id');
         if(val == ""){
           $(this).closest("div.content").find(".quantity-field").focus();
           return;
@@ -113,6 +123,11 @@
                     var errorStr = err.status;
                     $(".text-errors").text(errorStr);
                     $(retErrorStr).show();
+                    //$("").blur();
+                    var selector = "#" + buttonid;
+                    $(selector).blur();
+                    selector = "#" + quantityid;
+                    $(selector).focus();
                   }
               });
             $(retErrorStr).hide();

@@ -1,0 +1,18 @@
+{% extends "user_base.html" %}
+
+{% block user_view_purchases_stylesheet %}
+  <link rel="stylesheet" href="../static/user_view_purchases.css">
+{% endblock %}
+
+{% block date_header %}
+  <th scope="col">Date of transaction</th>
+{% endblock %}
+
+{% block user_content %}
+  <script>
+    $(document).ready(function(){
+      $('.table tr:eq(0) th:eq(3)').text("Transaction (£)");
+      $('.table tr:eq(0) th:eq(2)').text("Quantity sold");
+    });
+  </script>
+{% endblock %}
