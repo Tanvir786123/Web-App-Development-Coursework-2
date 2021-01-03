@@ -45,6 +45,7 @@ admin.add_view(MyModelView(models.Manager, db.session))
 admin.add_view(MyModelView(models.Controller, db.session))
 admin.add_view(MyModelView(models.Product, db.session))
 admin.add_view(MyModelView(models.Basket, db.session))
+admin.add_view(MyModelView(models.Transaction, db.session))
 
 admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 

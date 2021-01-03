@@ -2,3 +2,11 @@ body {
   background: rgb(65,55,244);
   background: linear-gradient(90deg, rgba(65,55,244,1) 0%, rgba(0,130,145,1) 50%, rgba(0,219,255,1) 100%);
 }
+
+.alert-custom {
+  background-color: #6089D5;
+}
+
+.text-color {
+    color: #FFFFFF;
+}

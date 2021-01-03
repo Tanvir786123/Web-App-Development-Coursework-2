@@ -35,7 +35,7 @@ def index():
         if current_user.account_type() == Account.MANAGER_ACCOUNT:
             return redirect(url_for('manager'))
         elif current_user.account_type() == Account.USER_ACCOUNT:
-            pass
+            return redirect(url_for('user_home'))
         elif current_user.account_type() == Account.STAFF_ACCOUNT:
             pass
         elif current_user.account_type() == Account.CONTROLLER_ACCOUNT:
@@ -74,7 +74,12 @@ def view_purchases():
         return redirect(url_for('logout'))
     else:
         user_cookie_id = request.cookies.get(COOKIE_USER_ID_KEY)
-        return render_template('user_view_purchases.html', title='Cafè Noir')
+        results = db.session.query(Transaction).join(Product).filter\
+                                  (Transaction.product_id==Product.product_id)\
+                                  .join(User).filter\
+                                  (User.username==user_cookie_id).all()
+        return render_template('user_view_purchases.html', title='Cafè Noir',
+                                results=results)
 
 @app.route('/delete/basket', methods=['GET', 'POST'])
 @login_required
@@ -106,6 +111,8 @@ def confirm_basket():
             executed = False
             user_cookie_id = request.cookies.get(COOKIE_USER_ID_KEY)
             rows = Basket.query.filter_by(owner_id=user_cookie_id).count()
+            transaction_id = db.session.query(Transaction).count()
+            transaction_id = transaction_id + 1
             user = User.query.filter_by(username=user_cookie_id).first()
             if not user:
                 return json.dumps({'status': 'Server error'}),500
@@ -133,11 +140,14 @@ def confirm_basket():
                     if executed == False:
                         executed = True
                     current_cost = round(current_cost, 2)
-                    statement = transaction_table.insert().values(\
-                                product_id=product.product_id,
-                                username=user_cookie_id, quantity=id[0],
-                                sub_cost=current_cost, date=datetime_object)
-                    #db.session.execute(statement)
+                    transaction = Transaction(transaction_id=transaction_id,
+                                              product_id=product.product_id,
+                                              user_id=user_cookie_id,
+                                              quantity=id[0],
+                                              sub_cost=current_cost,
+                                              date=datetime_object, user=user,
+                                              product=product)
+                    db.session.add(transaction)
             db.session.commit()
             remember = request.form['remember']
             if remember == 'true' and executed == True:
@@ -295,6 +305,12 @@ def user_home():
     return render_template('user_index.html', title='Cafè Noir',
                             products=products, form=form)
 
+@app.route('/manager/view/transactions')
+def manager_view_transactions():
+    if not current_user.account_type() == Account.MANAGER_ACCOUNT:
+        return redirect(url_for('logout'))
+    return render_template('manager_view_purchases.html', title='Cafè Noir')
+
 @app.route('/manager/add_products', methods=['GET', 'POST'])
 @login_required
 def add_products():
@@ -401,15 +417,19 @@ def change_manager_password(user_id):
 @login_required
 def manager():
     if current_user.account_type() == Account.MANAGER_ACCOUNT:
+        products = Product.query.filter(Product.product_quantity\
+                                        < Product.product_reorder_level).all()
         cookie_id = request.cookies.get(COOKIE_MANAGER_ID_KEY)
         if not cookie_id:
             res = make_response(render_template('manager_index.html',
-                                                 title='Cafè Noir'))
+                                                 title='Cafè Noir',
+                                                 products=products))
             res.set_cookie(COOKIE_MANAGER_ID_KEY, current_user.get_id(),
                            httponly=True)
             return res
         else:
-            return render_template('manager_index.html', title='Cafè Noir')
+            return render_template('manager_index.html', title='Cafè Noir',
+                                    products=products)
     else:
         return redirect(url_for('logout'))
 

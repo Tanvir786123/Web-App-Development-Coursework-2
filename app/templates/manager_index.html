@@ -5,4 +5,10 @@
 {% endblock %}
 
 {% block manager_content %}
+  <br>
+  {% for item in products %}
+    <div class="alert alert-danger alert-dismissible text-center" role="alert">
+      {{item.product_name}} is below it's set reorder level.
+    </div>
+  {% endfor %}
 {% endblock %}
