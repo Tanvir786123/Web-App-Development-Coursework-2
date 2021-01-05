@@ -11,22 +11,23 @@
 {% endblock %}
 
 {% block user_content %}
-  {% set count = namespace(value=5) %}
+  {% set success_class = namespace(value=1) %}
+  {% set error_class = namespace(value=2) %}
   {% for product in products %}
   <tr>
     <th scope="row">{{ product.product_name }}</th>
     <td>{{ product.product_description }}</td>
     <td class="w-25">
       {% if product.product_thumbnail_type == 1 %}
-        <img src="../static/product_images/{{ loop.index }}.png"
+        <img src="../static/product_images/{{ product.product_id }}.png"
              class="img-fluid img-thumbnail w-75"
              alt="Coffee product">
       {% elif product.product_thumbnail_type == 2 %}
-        <img src="../static/product_images/{{ loop.index }}.jpg"
+        <img src="../static/product_images/{{ product.product_id }}.jpg"
              class="img-fluid img-thumbnail w-75"
              alt="Coffee product">
       {% elif product.product_thumbnail_type == 3 %}
-        <img src="../static/product_images/{{ loop.index }}.jpeg"
+        <img src="../static/product_images/{{ product.product_id }}.jpeg"
              class="img-fluid img-thumbnail w-75"
              alt="Coffee product">
       {% else %}
@@ -38,22 +39,22 @@
     <td>
       <div class="content">
         <form>
-          {{ form.csrf_token(id=product.product_id ) }}
+          {{ form.csrf_token(id=False) }}
           {{ form.quantity(autocomplete="off", class="quantity-field",
-                           id=product.product_id*4, placeholder="Quantity" )}}
+                           placeholder="Quantity", id=False )}}
           {{ form.product_id(autocomplete="off", class="product-id",
-                             id=product.product_id*11)}}
-          {% set buttonid = loop.index * 16 %}
-          <input type="submit" value="Add to basket" class="submit-button"
-                 id={{ buttonid }}>
-          <div class="alert alert-danger centre {{ loop.index }}" role="alert">
-            <p class="text-errors"></p>
-          </div>
-          <div class="alert alert-success centre {{ count.value }}"
+                             value=product.product_id, id=False )}}
+          <input type="submit" value="Add to basket" class="submit-button">
+          <div class="alert alert-success centre {{ success_class.value }}"
                role="alert">
-            <p class="text-success"></p>
+               <p></p>
           </div>
-          {% set count.value = count.value + 5 %}
+          <div class="alert alert-danger centre {{ error_class.value }}"
+               role="alert">
+               <p></p>
+          </div>
+          {% set success_class.value = success_class.value + 2 %}
+          {% set error_class.value = error_class.value + 2 %}
         </form>
       </div>
     </td>
@@ -74,66 +75,52 @@
         }
       })
       $(document).on("click", ".submit-button", function (e){
+        $(this).blur();
         var val = $(this).closest("div.content").find(".quantity-field").val();
-        var buttonid = $(this).attr('id');
-        var quantityid = $(this).closest("div.content").find(".quantity-field")
-                                .attr('id');
+        var classSymbol = "."
+        var errorClass = $(this).closest("div.content").find(".alert-danger")
+                                .attr('class').split(' ').pop()
+        var successClass = $(this).closest("div.content").find(".alert-success")
+                                  .attr('class').split(' ').pop()
+        errorClass = classSymbol + errorClass
+        successClass = classSymbol + successClass
+        $(errorClass).hide();
+        $(successClass).hide();
         if(val == ""){
           $(this).closest("div.content").find(".quantity-field").focus();
-          return;
-        }
-        var row = $(this).closest("tr").index() + 1;
-        var classSymbol = "."
-        var identifierSymbol = "#";
-        var retErrorStr = classSymbol.concat(row);
-        var retSuccessStr = classSymbol.concat(row*5);
-        var retButtonIdentifier = identifierSymbol.concat(row*16);
-        var retTextIdentifier = identifierSymbol.concat(row*4);
-        if(isNaN(val)){
-          $(this).closest("div.content").find(".quantity-field").focus();
-          $(".text-errors").text("Invalid quantity supplied.");
-          $(retErrorStr).show();
-        }
-        else{
-          if(val < 1){
-            $(this).closest("div.content").find(".quantity-field").focus();
-            $(".text-errors").text("No items selected.");
-            $(retErrorStr).show();
-          }
-          else if(val > 25){
-            $(this).closest("div.content").find(".quantity-field").focus();
-            $(".text-errors").text("Order limit exceeded.");
-            $(retErrorStr).show();
-          }
-          else{
-            $(this).closest("div.content").find(".product-id").val(row);
-            var url = "{{ url_for('user_order') }}";
-              $.ajax({
-                  type: "POST",
-                  url: url,
-                  data: $(this).closest("form").serialize(),
-                  success: function(data){
-                    $(".text-success").text("Order has been placed in basket.");
-                    $(retSuccessStr).show();
-                    $(retButtonIdentifier).attr("disabled", true);
-                    $(retTextIdentifier).attr("disabled", true);
-                  },
-                  error: function(error){
-                    var err = JSON.parse(error.responseText);
-                    var errorStr = err.status;
-                    $(".text-errors").text(errorStr);
-                    $(retErrorStr).show();
-                    //$("").blur();
-                    var selector = "#" + buttonid;
-                    $(selector).blur();
-                    selector = "#" + quantityid;
-                    $(selector).focus();
-                  }
-              });
-            $(retErrorStr).hide();
-          }
+          return
         }
         e.preventDefault();
+        if(isNaN(val) || val < 1){
+          $(this).closest("div.content").find(".quantity-field").focus();
+          $(this).closest("div.content").find(".alert-danger")
+                  .text("Invalid quantity supplied.")
+          $(this).closest("div.content").find(".alert-danger").show();
+        }
+        else if(val > 25){
+          $(this).closest("div.content").find(".quantity-field").focus();
+          $(this).closest("div.content").find(".alert-danger")
+                 .text("Order limit exceeded.")
+          $(this).closest("div.content").find(".alert-danger").show();
+        }
+        else{
+          var url = "{{ url_for('user_order') }}";
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: $(this).closest("form").serialize(),
+            success: function(data){
+              $(successClass).text("Order has been placed in basket");
+              $(successClass).show();
+            },
+            error: function(error){
+              var err = JSON.parse(error.responseText.toString());
+              var errorStr = err.status;
+              $(errorClass).text(errorStr);
+              $(errorClass).show();
+            }
+          });
+        }
       });
     });
    </script>

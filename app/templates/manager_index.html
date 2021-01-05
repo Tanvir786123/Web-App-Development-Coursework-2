@@ -6,9 +6,18 @@
 
 {% block manager_content %}
   <br>
+  {% set executed = namespace(value=0) %}
   {% for item in products %}
-    <div class="alert alert-danger alert-dismissible text-center" role="alert">
+    {% if executed.value == 0 %}
+      {% set executed.value = 1 %}
+    {% endif %}
+    <div class="alert alert-danger text-center" role="alert">
       {{item.product_name}} is below it's set reorder level.
     </div>
   {% endfor %}
+  {% if executed.value == 0 %}
+    <div class="alert alert-success text-center" role="alert">
+      All registered products have their stock levels above their reorder level.
+    </div>
+  {% endif %}
 {% endblock %}

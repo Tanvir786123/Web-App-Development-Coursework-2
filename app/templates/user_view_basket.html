@@ -16,15 +16,15 @@
     <td>{{ product.product_description }}</td>
     <td class="w-25">
       {% if product.product_thumbnail_type == 1 %}
-        <img src="../static/product_images/{{ loop.index }}.png"
+        <img src="../static/product_images/{{ product.product_id }}.png"
              class="img-fluid img-thumbnail w-75"
              alt="Coffee product">
       {% elif product.product_thumbnail_type == 2 %}
-        <img src="../static/product_images/{{ loop.index }}.jpg"
+        <img src="../static/product_images/{{ product.product_id }}.jpg"
              class="img-fluid img-thumbnail w-75"
              alt="Coffee product">
       {% elif product.product_thumbnail_type == 3 %}
-        <img src="../static/product_images/{{ loop.index }}.jpeg"
+        <img src="../static/product_images/{{ product.product_id }}.jpeg"
              class="img-fluid img-thumbnail w-75"
              alt="Coffee product">
       {% else %}
@@ -33,23 +33,19 @@
       {% endif %}
     </td>
     <td>£{{ product.product_price }}</td>
-    <td id={{ count.value }}>{{ product.quantity }}</td>
+    <td class={{ count.value }}>{{ product.quantity }}</td>
     <td>
       <div class="content">
         <form onsubmit="return validateForm()" class="my-form">
-          {{ form.csrf_token(id=product.product_id ) }}
+          {{ form.csrf_token(id=False) }}
           {{ form.quantity(autocomplete="off", class="quantity-field",
-                           id=product.product_id*4, value=product.quantity )}}
+                           id=product.product_id, value=product.quantity )}}
           <input type="submit" value="Change quantity" class="alter-quantity"
                  >
           <input type="submit" value="Confirm quantity" class="confirm-quantity"
                  >
-          <div class="alert alert-danger centre {{ loop.index }}" role="alert">
-            <p class="text-errors"></p>
-          </div>
-          <div class="alert alert-success centre {{ count.value }}"
-               role="alert">
-            <p class="text-success"></p>
+          <div class="alert alert-danger centre" role="alert">
+            <p></p>
           </div>
           {% set count.value = count.value + 5 %}
         </form>
@@ -57,6 +53,9 @@
     </td>
   </tr>
   {% endfor %}
+{% endblock %}
+
+{% block view_basket_form %}
   <div class="confirmation">
     <input type="submit" value="Confirm purchase" class="form-submit"
            id="final-submit">
@@ -103,17 +102,18 @@
         var index = $(this).closest('td').parent()[0].sectionRowIndex;
         ++index;
         index = index * 5;
-        var identifierSymbol = '#'
-        var retStr = identifierSymbol + index;
-        e.preventDefault();
+        var classSymbol = '.'
+        var retStr = classSymbol + index;
         var val = $(this).closest("div.content").find(".quantity-field").val();
         if(val == ""){
           $(this).closest("div.content").find(".quantity-field").focus();
           return;
         }
+        e.preventDefault();
         val = Number(val);
         if(isNaN(val) || val < 0){
-          $(".text-errors").text("Invalid quantity supplied.");
+          $(this).closest("div.content").find(".alert-danger")
+                 .text("Invalid quantity supplied.");
           $(this).closest("div.content").find(".alert-danger").show();
           $(this).closest("div.content").find(".quantity-field").focus();
           return false;
@@ -122,7 +122,8 @@
           $(this).closest("div.content").find(".alert-danger").hide();
         }
         if(val > 25){
-          $(".text-errors").text("Order limit exceeded.");
+          $(this).closest("div.content").find(".alert-danger")
+                 .text("Order limit exceeded.");
           $(this).closest("div.content").find(".alert-danger").show();
           $(this).closest("div.content").find(".quantity-field").focus();
           return false;
@@ -145,7 +146,6 @@
         var counter = 0;
         $(".my-form input[type=text]").each(function(){
           var id = $(this).attr('id');
-          id = id / 4;
           var value = $(this).attr('value');
           value = value + "-" + id;
           dataArray[counter] = value;
@@ -174,7 +174,7 @@
               }, 10000);
             },
             error: function(error){
-              var err = JSON.parse(error.responseText);
+              var err = JSON.parse(error.responseText.toString());
               var errorStr = err.status;
               $(".text-errors").text(errorStr);
               $(".user-error").show();

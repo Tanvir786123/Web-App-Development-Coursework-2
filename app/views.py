@@ -130,15 +130,16 @@ def confirm_basket():
                                                               .product_name)
                                         }),400
                 else:
-                    current_cost = current_cost\
-                                   + float(id[0]) * float(product.product_price)
+                    temp = float(id[0]) * float(product.product_price)
                     basket.quantity = id[0]
-                    product.product_quantity = int(product.product_quantity)\
-                                                   - int(id[0])
-                    if current_cost == 0:
+                    if temp == 0:
                         continue
                     if executed == False:
                         executed = True
+                    current_cost = current_cost\
+                                   + float(id[0]) * float(product.product_price)
+                    product.product_quantity = int(product.product_quantity)\
+                                                   - int(id[0])
                     current_cost = round(current_cost, 2)
                     transaction = Transaction(transaction_id=transaction_id,
                                               product_id=product.product_id,
@@ -233,7 +234,7 @@ def confirm_basket():
                                               disappearing and being\
                                               redirected.'}), 400
 
-@app.route('/user/view_basket')
+@app.route('/user/view_basket', methods=['GET', 'POST'])
 @login_required
 def view_basket():
     if not current_user.account_type() == Account.USER_ACCOUNT:
@@ -242,7 +243,7 @@ def view_basket():
         form = QuantityForm()
         receipt_form = ReceiptForm()
         user_cookie_id = request.cookies.get(COOKIE_USER_ID_KEY)
-        products = Basket.query.filter_by(owner_id=user_cookie_id)
+        products = Basket.query.filter_by(owner_id=user_cookie_id).all()
         return render_template('user_view_basket.html', title='Cafè Noir',
                                 products=products, form=form,
                                 receipt=receipt_form)
@@ -305,11 +306,16 @@ def user_home():
     return render_template('user_index.html', title='Cafè Noir',
                             products=products, form=form)
 
-@app.route('/manager/view/transactions')
+@app.route('/manager/view_transactions')
+@login_required
 def manager_view_transactions():
     if not current_user.account_type() == Account.MANAGER_ACCOUNT:
         return redirect(url_for('logout'))
-    return render_template('manager_view_purchases.html', title='Cafè Noir')
+    results = db.session.query(Transaction).join(Product).filter\
+                              (Transaction.product_id==Product.product_id)\
+                              .join(User).all()
+    return render_template('manager_view_transactions.html', title='Cafè Noir',
+                            results=results)
 
 @app.route('/manager/add_products', methods=['GET', 'POST'])
 @login_required
@@ -338,6 +344,8 @@ def add_products():
             elif ".jpeg" in add_products_form.product_thumbnail_link.data:
                 file_name = file_name + ".jpeg"
                 type = JPEG
+            else:
+                raise Exception("Image type is undefined.")
             response = requests.get(add_products_form.\
                                     product_thumbnail_link.data)
             path = os.path.join(app.root_path, 'static', 'product_images',

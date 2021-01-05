@@ -1,0 +1,95 @@
+{% extends "manager_base.html" %}
+
+{% block manager_view_transactions_stylesheet %}
+  <link rel="stylesheet" href="../static/manager_view_transactions.css">
+{% endblock %}
+
+{% block manager_content %}
+  <br><br>
+  <div class="container">
+    <table class="table table-hover table-primary w-100">
+      <thead>
+        <tr>
+          <th scope="col">Transaction no:</th>
+          <th scope="col">Date</th>
+          <th scope="col">Product name</th>
+          <th scope="col">Quantity sold</th>
+          <th scope="col">Sub total (£)</th>
+          <th scope="col">Transaction owner</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set single_execution = namespace(value=1) %}
+        {% set id = namespace(value=0) %}
+        {% set cost = namespace(value=0) %}
+        {% set passed = namespace(value=0) %}
+        {% for item in results %}
+          {% if single_execution.value == 1 %}
+            <tr>
+              <th scope="row">{{ item.transaction_id }}</th>
+              <td>{{ item.date }}</td>
+              <td>{{ item.product.product_name }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.sub_cost }}</td>
+              <td>{{ item.user.username }}</td>
+            </tr>
+            {% set single_execution.value = 0 %}
+            {% set id.value = item.transaction_id %}
+            {% set cost.value = item.sub_cost %}
+            {% set passed.value = 1 %}
+          {% else %}
+            {% if id.value == item.transaction_id %}
+              <tr>
+                <th scope="row"></th>
+                <td>{{ item.date }}</td>
+                <td>{{ item.product.product_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.sub_cost }}</td>
+              </tr>
+              {% set cost.value = item.sub_cost %}
+            {% else %}
+              <tr>
+                <td colspan="6">
+                  <div class="alert alert-danger alert-custom text-right"
+                       role="alert">
+                    <div class="text-color">
+                      Sub total: £{{ "%.2f"|format(cost.value) }} <br>
+                      VAT: £{{ "%.2f"|format(cost.value * 0.2) }} <br>
+                      Total: £{{ "%.2f"|format(cost.value
+                                  + cost.value * 0.2) }}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">{{ item.transaction_id }}</th>
+                <td>{{ item.date }}</td>
+                <td>{{ item.product.product_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.sub_cost }}</td>
+                <td>{{ item.user.username }}</td>
+              </tr>
+              {% set cost.value = item.sub_cost %}
+              {% set id.value = item.transaction_id %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {% if passed.value == 1 %}
+          <tr>
+            <td colspan="6">
+              <div class="alert alert-danger alert-custom text-right"
+                   role="alert">
+                <div class="text-color">
+                  Sub total: £{{ "%.2f"|format(cost.value) }} <br>
+                  VAT: £{{ "%.2f"|format(cost.value * 0.2) }} <br>
+                  Total: £{{ "%.2f"|format(cost.value
+                              + cost.value * 0.2) }}
+                </div>
+              </div>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

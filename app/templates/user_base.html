@@ -52,22 +52,20 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-		      <table class="table table-image table-hover table-primary w-100"
-                 id="view_items">
-            <thead>
-              <tr>
-                <th scope="col">Product name</th>
-                <th scope="col">Product description</th>
-                <th scope="col">Product image</th>
-                <th scope="col">Product price</th>
-                {% block quantity_header %} {% endblock %}
-                {% block date_header %} {% endblock %}
-              </tr>
-            </thead>
-            <tbody>
-              {% block user_content %} {% endblock %}
-            </tbody>
-          </table>
+        {% block view_basket_form %} {% endblock %}
+        <table id="view_items" class="table table-image table-hover table-primary w-100">
+          <thead>
+            <tr>
+              <th scope="col">Product name</th>
+              <th scope="col">Product description</th>
+              <th scope="col">Product image</th>
+              <th scope="col">Product price</th>
+              {% block quantity_header %} {% endblock %}
+              {% block date_header %} {% endblock %}
+            </tr>
+          </thead>
+            {% block user_content %} {% endblock %}
+        </table>
         </div>
       </div>
     </div>
