@@ -386,15 +386,15 @@ def add_products():
         return render_template('manager_add_products.html', title='Cafè Noir',
                                 form=add_products_form, status=0)
 
-@app.route('/change_manager_password/<user_id>', methods=['GET', 'POST'])
+@app.route('/change_manager_password', methods=['GET', 'POST'])
 @login_required
-def change_manager_password(user_id):
+def change_manager_password():
     if not current_user.account_type() == Account.MANAGER_ACCOUNT:
         return redirect(url_for('logout'))
     change_password_form = ChangeMyPasswordForm()
     if change_password_form.validate_on_submit():
         cookie_id = request.cookies.get(COOKIE_MANAGER_ID_KEY)
-        if cookie_id and cookie_id == user_id:
+        if cookie_id:
             manager = Manager.query.filter_by(username=cookie_id).first()
             if manager:
                 manager.password = manager.generate_new_password_hash(
