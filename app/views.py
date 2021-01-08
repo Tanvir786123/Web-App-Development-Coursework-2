@@ -437,7 +437,8 @@ def manager_change_manager_password():
             flash('An unknown error has occured, you will be directed to the\
                    login page in 10 seconds.\
                    Please ensure cookies are enabled.')
-            return render_template('manager_change_password.html',\
+            return render_template('manager_change_password.html',
+                                    title='Cafè Noir',
                                     form=change_password_form, status=0),\
                                     {"Refresh": "10; url=/logout"}
     return render_template('manager_change_password.html', title='Cafè Noir',
