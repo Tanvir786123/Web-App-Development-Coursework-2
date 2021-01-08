@@ -67,6 +67,36 @@ def index():
             flash("Incorrect username or password")
     return render_template('index.html', title='Cafè Noir', form=login_form)
 
+@app.route('/user/change_user_password', methods=['GET', 'POST'])
+@login_required
+def user_change_user_password():
+    if not current_user.account_type() == Account.USER_ACCOUNT:
+        return redirect(url_for('logout'))
+    else:
+        form = ChangeMyPasswordForm()
+        if form.validate_on_submit():
+            user_cookie_id = request.cookies.get(COOKIE_USER_ID_KEY)
+            user = User.query.filter_by(username=user_cookie_id).first()
+            if not user or not user_cookie_id:
+                flash('An unknown error has occured, you will be directed to\
+                       the login page in 10 seconds.\
+                       Please ensure cookies are enabled.')
+                return render_template('user_change_password.html',
+                                        title="Cafè Noir", form=form,
+                                        status=0),\
+                                        {"Refresh": "10; url=/logout"}
+            else:
+                user.password = user.generate_new_password_hash(
+                                     form.password.data)
+                db.session.commit()
+                flash('Your password has been updated.')
+                return render_template('user_change_password.html',
+                                        title="Cafè Noir", form=form,
+                                        status=1)
+        else:
+            return render_template('user_change_password.html',
+                                    title='Cafè Noir', form=form, status=0)
+
 @app.route('/user/view_purchases')
 @login_required
 def view_purchases():
@@ -386,31 +416,23 @@ def add_products():
         return render_template('manager_add_products.html', title='Cafè Noir',
                                 form=add_products_form, status=0)
 
-@app.route('/change_manager_password', methods=['GET', 'POST'])
+@app.route('/manager/change_manager_password', methods=['GET', 'POST'])
 @login_required
-def change_manager_password():
+def manager_change_manager_password():
     if not current_user.account_type() == Account.MANAGER_ACCOUNT:
         return redirect(url_for('logout'))
     change_password_form = ChangeMyPasswordForm()
     if change_password_form.validate_on_submit():
         cookie_id = request.cookies.get(COOKIE_MANAGER_ID_KEY)
-        if cookie_id:
-            manager = Manager.query.filter_by(username=cookie_id).first()
-            if manager:
-                manager.password = manager.generate_new_password_hash(
-                                           change_password_form.password.data)
-                db.session.commit()
-                flash('Your password has been updated.')
-                return render_template('manager_change_password.html',
-                                        title='Cafè Noir',
-                                        form=change_password_form, status=1)
-            else:
-                flash('An unknown error has occured, you will be directed to\
-                       the login page in 10 seconds.\
-                       Please ensure cookies are enabled.')
-                return render_template('manager_change_password.html',\
-                                        form=change_password_form, status=0),\
-                                        {"Refresh": "10; url=/logout"}
+        manager = Manager.query.filter_by(username=cookie_id).first()
+        if cookie_id and manager:
+            manager.password = manager.generate_new_password_hash(
+                                       change_password_form.password.data)
+            db.session.commit()
+            flash('Your password has been updated.')
+            return render_template('manager_change_password.html',
+                                    title='Cafè Noir',
+                                    form=change_password_form, status=1)
         else:
             flash('An unknown error has occured, you will be directed to the\
                    login page in 10 seconds.\
