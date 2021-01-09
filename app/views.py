@@ -19,6 +19,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+import logging
 
 COOKIE_MANAGER_ID_KEY = 'id'
 COOKIE_USER_ID_KEY = 'user_id'
@@ -71,12 +72,25 @@ def index():
 @login_required
 def user_change_user_password():
     if not current_user.account_type() == Account.USER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' user/change_user_password',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     else:
         form = ChangeMyPasswordForm()
         if form.validate_on_submit():
             user_cookie_id = request.cookies.get(COOKIE_USER_ID_KEY)
+            if not user_cookie_id:
+                logging.critical('User with id %s had no cookie to use when'
+                                  +' trying to login and change their password.',
+                                  str(current_user.get_id()))
             user = User.query.filter_by(username=user_cookie_id).first()
+            if not user:
+                logging.critical('User with id %s could not be found when they'
+                                  +' tried to login and change their password'
+                                  +' but they seemed to have a cookie present.',
+                                  str(current_user.get_id()))
             if not user or not user_cookie_id:
                 flash('An unknown error has occured, you will be directed to\
                        the login page in 10 seconds.\
@@ -101,9 +115,17 @@ def user_change_user_password():
 @login_required
 def view_purchases():
     if not current_user.account_type() == Account.USER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' user/view_purchases',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     else:
         user_cookie_id = request.cookies.get(COOKIE_USER_ID_KEY)
+        if not user_cookie_id:
+            logging.critical('User with id %s had no cookie to use when'
+                              +' trying to view their transactions.',
+                              str(current_user.get_id()))
         results = db.session.query(Transaction).join(Product).filter\
                                   (Transaction.product_id==Product.product_id)\
                                   .join(User).filter\
@@ -115,8 +137,16 @@ def view_purchases():
 @login_required
 def delete_basket():
     if not current_user.account_type() == Account.USER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' delete/basket',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     user_cookie_id = request.cookies.get(COOKIE_USER_ID_KEY)
+    if not user_cookie_id:
+        logging.critical('User with id %s had no cookie to use when'
+                          +' deleting their basket.',
+                          str(current_user.get_id()))
     basket = Basket.query.filter_by(owner_id=user_cookie_id).all()
     for item in basket:
         db.session.delete(item)
@@ -126,33 +156,56 @@ def delete_basket():
     try:
         os.remove(path)
     except:
+        logging.info('Unable to delete PDF receipt for user with id %s. Check if'
+                      +' user with this id for this date and time was sent a'
+                      +' receipt from the default email sender as user may have'
+                      +' not opted for a receipt originally or may be just'
+                      +' clearing their basket.',
+                      current_user.get_id())
         pass
     db.session.commit()
     return redirect(url_for('user_home'))
 
-@app.route('/confirm/basket', methods=['POST'])
+@app.route('/confirm/basket', methods=['GET', 'POST'])
 @login_required
 def confirm_basket():
     if not current_user.account_type() == Account.USER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' confirm/basket',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     else:
         if request.method == "POST":
             datetime_object = datetime.datetime.now()
             executed = False
             user_cookie_id = request.cookies.get(COOKIE_USER_ID_KEY)
+            if not user_cookie_id:
+                logging.critical('User with id %s had no cookie to use when'
+                                  +' confirming their basket.',
+                                  str(current_user.get_id()))
+                return json.dumps({'status': 'Server error'}),500
             rows = Basket.query.filter_by(owner_id=user_cookie_id).count()
             transaction_id = db.session.query(Transaction).count()
             transaction_id = transaction_id + 1
             user = User.query.filter_by(username=user_cookie_id).first()
             if not user:
+                logging.critical('User with id %s couldnt be found inside user'
+                                  +' db when confirming their basket',
+                                  str(current_user.get_id()))
                 return json.dumps({'status': 'Server error'}),500
             current_cost = 0
             for i in range(rows):
                 data = request.form[str(i)]
                 id = data.split('-')
                 product = Product.query.filter_by(product_id=id[1]).first()
-                basket = Basket.query.filter_by(product_id=id[1]).first()
+                basket = Basket.query.filter_by(product_id=id[1])\
+                                     .filter_by(owner_id=user_cookie_id).first()
                 if not product:
+                    logging.critical('Product with id %s couldnt be found'
+                                      +' whilst user %s was confirming their'
+                                      +' basket.', str(id[1]),
+                                      str(current_user.get_id()))
                     return json.dumps({'status': 'Server error'}),500
                 if product.product_quantity < int(id[0]):
                     return json.dumps({'status': 'Insufficient stock available\
@@ -268,6 +321,10 @@ def confirm_basket():
 @login_required
 def view_basket():
     if not current_user.account_type() == Account.USER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' user/view_basket',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     else:
         form = QuantityForm()
@@ -278,15 +335,21 @@ def view_basket():
                                 products=products, form=form,
                                 receipt=receipt_form)
 
-@app.route('/user/order', methods=['POST'])
+@app.route('/user/order', methods=['GET', 'POST'])
 @login_required
 def user_order():
     if not current_user.account_type() == Account.USER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' user/order',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     order_form = QuantityForm()
     if order_form.validate_on_submit():
         product = Product.query.get(order_form.product_id.data)
         if not product:
+            logging.error('Product id %s could not be found in db',
+                           order_form.product_id.data)
             return json.dumps({'status': 'Server error'}), 500
         else:
             if product.product_quantity >= order_form.quantity.data:
@@ -321,6 +384,9 @@ def user_order():
 @login_required
 def user_home():
     if not current_user.account_type() == Account.USER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                        +' user/home', str(current_user.account_type()),
+                        str(current_user.get_id()))
         return redirect(url_for('logout'))
     form = QuantityForm()
     products = Product.query.all()
@@ -340,6 +406,10 @@ def user_home():
 @login_required
 def manager_view_transactions():
     if not current_user.account_type() == Account.MANAGER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' manager/view_transactions',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     results = db.session.query(Transaction).join(Product).filter\
                               (Transaction.product_id==Product.product_id)\
@@ -351,12 +421,18 @@ def manager_view_transactions():
 @login_required
 def add_products():
     if not current_user.account_type() == Account.MANAGER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' manager/add_products',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     add_products_form = AddProductsForm()
     if add_products_form.validate_on_submit():
         temp = add_products_form.product_name.data.capitalize()
         product = Product.query.filter_by(product_name=temp).first()
         if product:
+            logging.info('The product name %s is already present in product db',
+                          str(product.product_name))
             flash('Product name is already in use.')
             return render_template('manager_add_products.html',
                                     title='Cafè Noir', form=add_products_form,
@@ -375,6 +451,9 @@ def add_products():
                 file_name = file_name + ".jpeg"
                 type = JPEG
             else:
+                logging.warning('The regex failed to constrain url extension'
+                                 +' type %s',
+                                 add_products_form.product_thumbnail_link.data)
                 raise Exception("Image type is undefined.")
             response = requests.get(add_products_form.\
                                     product_thumbnail_link.data)
@@ -384,6 +463,8 @@ def add_products():
             file.write(response.content)
             file.close()
         except:
+            logging.info('Could not download product image from URL %s',
+                          add_products_form.product_thumbnail_link.data)
             flash('Product thumbnail image could not be downloaded.')
             return render_template('manager_add_products.html',
                                     title='Cafè Noir', form=add_products_form,
@@ -420,6 +501,10 @@ def add_products():
 @login_required
 def manager_change_manager_password():
     if not current_user.account_type() == Account.MANAGER_ACCOUNT:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' manager/change_manager_password',
+                         str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
     change_password_form = ChangeMyPasswordForm()
     if change_password_form.validate_on_submit():
@@ -462,6 +547,9 @@ def manager():
             return render_template('manager_index.html', title='Cafè Noir',
                                     products=products)
     else:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' manager/', str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
 
 @app.route('/manager/add_staff', methods=['GET', 'POST'])
@@ -480,6 +568,8 @@ def add_staff():
             user = User.query.filter_by(username=add_staff_form.username.data)\
                              .first()
             if admin or manager or staff or user:
+                logging.info('The username %s is already present in staff db',
+                              str(add_staff_form.username.data))
                 flash('This username has been taken, please try again.')
             else:
                 staff = Staff(add_staff_form.username.data, add_staff_form\
@@ -495,6 +585,9 @@ def add_staff():
                                 form=add_staff_form,
                                 status=0)
     else:
+        logging.warning('Account with type %s and username %s tried to access'
+                         +' manager/add_staff', str(current_user.account_type()),
+                         str(current_user.get_id()))
         return redirect(url_for('logout'))
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -512,18 +605,27 @@ def signup():
         user = User.query.filter_by(username=sign_up_form.username.data)\
                                     .all()
         if admin or manager or staff or user:
+            logging.info('Account with username %s is present in db already.'
+                          +' Triggered if statement above check email',
+                          str(sign_up_form.username.data))
             flash('This username has been taken, please try again.')
         else:
             user_obj = User.query.filter_by(email=sign_up_form.email.data).all()
             if user_obj:
+                logging.info('Account with username %s and email %s already'
+                              +' present. Triggered email if statement but not'
+                              +' user if statement',
+                              str(sign_up_form.username.data),
+                              str(sign_up_form.email.data))
                 flash('This email has been taken, please try again.')
             else:
                 response = requests.get(
                            "https://isitarealemail.com/api/email/validate",
                            params = {'email': sign_up_form.email.data})
-
                 status = response.json()['status']
                 if not status == "valid":
+                    logging.info('Email address: %s was rejected by API',
+                                  str(sign_up_form.email.data))
                     flash('Invalid email address supplied.')
                 else:
                     user = User(username=sign_up_form.username.data,
@@ -557,6 +659,8 @@ def logout():
 def init_admin():
     rows = Controller.query.count()
     if rows == 0:
+        logging.info('Had to recreate admin as rows were == 0 for the date'
+                      +' relevant to this row')
         admin = Controller('admin', '79A4BD7FB9')
         db.session.add(admin)
         db.session.commit()
@@ -564,6 +668,8 @@ def init_admin():
 def init_manager():
     rows = Manager.query.count()
     if rows == 0:
+        logging.info('Had to recreate manager as rows were == 0 for the date'
+                      +' relevant to this row')
         manager = Manager('alan123', '79A4BD7FB9')
         db.session.add(manager)
         db.session.commit()

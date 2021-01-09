@@ -1,0 +1,112 @@
+2021-01-09 00:31:40,274 WARNING root Thread-5 : Account with type Account.USER_ACCOUNT and username tanvir786 tried to access manager/add_staff
+
+2021-01-09 00:31:51,594 WARNING root Thread-10 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access user/home
+
+2021-01-09 00:33:09,990 WARNING root Thread-28 : Account with type Account.USER_ACCOUNT and username tanvir786 tried to access manager/
+
+2021-01-09 00:35:42,625 WARNING root Thread-22 : Account with type Account.USER_ACCOUNT and username tanvir786 tried to access manager/
+
+2021-01-09 00:36:27,574 WARNING root Thread-100 : Account with type Account.USER_ACCOUNT and username tanvir786 tried to access manager/add_staff
+
+2021-01-09 00:37:07,581 WARNING root Thread-8 : Account with type Account.USER_ACCOUNT and username tanvir786 tried to access manager/change_manager_password
+
+2021-01-09 00:41:43,598 WARNING root Thread-5 : Account with type Account.USER_ACCOUNT and username tanvir786 tried to access manager/add_products
+
+2021-01-09 00:45:27,315 WARNING root Thread-20 : Account with type Account.USER_ACCOUNT and username tanvir786 tried to access manager/add_products
+
+2021-01-09 00:51:18,691 WARNING root Thread-5 : Account with type Account.USER_ACCOUNT and username tanvir786 tried to access manager/view_transactions
+
+2021-01-09 00:53:34,143 WARNING root Thread-52 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access user/home
+
+2021-01-09 00:55:04,628 WARNING root Thread-3 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access user/order
+
+2021-01-09 00:57:00,869 WARNING root Thread-5 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access user/order
+
+2021-01-09 00:57:27,101 WARNING root Thread-15 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access user/view_basket
+
+2021-01-09 01:05:47,946 WARNING root Thread-3 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access confirm/basket
+
+2021-01-09 01:06:35,815 WARNING root Thread-15 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access confirm/basket
+
+2021-01-09 01:07:03,043 WARNING root Thread-17 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access delete/basket
+
+2021-01-09 01:09:09,660 WARNING root Thread-15 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access user/view_purchases
+
+2021-01-09 01:11:00,012 WARNING root Thread-5 : Account with type Account.MANAGER_ACCOUNT and username alan123 tried to access user/change_user_password
+
+2021-01-09 01:15:07,879 INFO flask_wtf.csrf Thread-22 : The CSRF tokens do not match.
+
+2021-01-09 01:15:11,775 INFO flask_wtf.csrf Thread-23 : The CSRF tokens do not match.
+
+2021-01-09 01:15:27,361 INFO flask_wtf.csrf Thread-24 : The CSRF tokens do not match.
+
+2021-01-09 01:15:32,672 INFO flask_wtf.csrf Thread-34 : The CSRF tokens do not match.
+
+2021-01-09 01:15:37,457 INFO flask_wtf.csrf Thread-35 : The CSRF tokens do not match.
+
+2021-01-09 01:24:38,122 INFO root Thread-17 : Account with username dssfd and email tanvirroshid786123@gmail.com already present. Triggered email if statement but not user if statement
+
+2021-01-09 01:26:23,648 INFO root Thread-10 : Account with username dssfd and email tanvirroshid786123@gmail.com already present. Triggered email if statement but not user if statement
+
+2021-01-09 01:27:16,375 INFO root Thread-13 : Account with username tanvir786 is present in db already Triggered if statement above check email
+
+2021-01-09 01:27:44,649 INFO root Thread-3 : Account with username tanvir786 is present in db already. Triggered if statement above check email
+
+2021-01-09 01:30:14,994 INFO root Thread-15 : Email address: ed18mtr@leeds.ac.uk was rejected by API
+
+2021-01-09 01:32:56,687 INFO root Thread-10 : Email address: ed18mtr@leeds.ac.uk was rejected by API
+
+2021-01-09 01:42:09,533 INFO root Thread-7 : The username tahmid786 is already present in staff db
+
+2021-01-09 01:47:09,997 INFO root Thread-3 : The product name Aaaaa is already present in product db
+
+2021-01-09 01:48:40,644 INFO root Thread-10 : The product name Aaaaa is already present in product db
+
+2021-01-09 01:49:56,869 INFO root Thread-3 : Could not download from URL <input id="product_thumbnail_link" name="product_thumbnail_link" required type="text" value="https://i.imgurgrdgE44FpF.jpg">
+
+2021-01-09 01:50:16,218 INFO root Thread-3 : Could not download from URL https://i.imgurgrdgE44FpF.jpg
+
+2021-01-09 01:50:43,835 INFO root Thread-3 : Could not download product image from URL https://i.imgurgrdgE44FpF.jpg
+
+2021-01-09 01:51:48,355 INFO root Thread-3 : Could not download product image from URL https://i.imgurgrdgE44FpF.jpg
+
+2021-01-09 01:53:42,323 INFO root Thread-3 : Could not download product image from URL https://i.imgurgrdgE44FpF.jpg
+
+2021-01-09 01:54:55,218 ERROR root Thread-16 : Product id 1 could not be found in db
+
+2021-01-09 02:00:42,640 CRITICAL root Thread-15 : User with id tanvir786 couldnt be found inside user db
+
+2021-01-09 02:01:15,768 CRITICAL root Thread-17 : User with id tanvir786 couldnt be found inside user db when confirming their basket
+
+2021-01-09 02:04:00,199 CRITICAL root Thread-15 : User with tanvir786 had no cookie to use when confirming their basket.
+
+2021-01-09 02:04:00,207 CRITICAL root Thread-15 : User with id tanvir786 couldnt be found inside user db when confirming their basket
+
+2021-01-09 02:04:32,621 CRITICAL root Thread-17 : User with tanvir786 had no cookie to use when confirming their basket.
+
+2021-01-09 02:04:55,132 CRITICAL root Thread-18 : User with id tanvir786 had no cookie to use when confirming their basket.
+
+2021-01-09 02:13:19,751 CRITICAL root Thread-16 : Product with id 1 couldnt be found whilst user tanvir786 was confirming their basket.
+
+2021-01-09 02:34:04,350 CRITICAL root Thread-16 : User with id tanvir786 had no cookie to use when deleting their basket.
+
+2021-01-09 02:37:00,350 INFO root Thread-18 : Unable to delete PDF receipt for user with id %s. Check if user with this id for this date was sent a receipt from the default email sender as user may have not opted for a receipt originally.
+
+2021-01-09 02:37:30,349 INFO root Thread-18 : Unable to delete PDF receipt for user with id tanvir786. Check if user with this id for this date was sent a receipt from the default email sender as user may have not opted for a receipt originally.
+
+2021-01-09 02:39:09,349 INFO root Thread-19 : Unable to delete PDF receipt for user with id tanvir786. Check if user with this id for this date and time was sent a receipt from the default email sender as user may have not opted for a receipt originally.
+
+2021-01-09 02:43:34,348 INFO root Thread-23 : Unable to delete PDF receipt for user with id tanvir786. Check if user with this id for this date and time was sent a receipt from the default email sender as user may have not opted for a receipt originally.
+
+2021-01-09 02:45:09,082 CRITICAL root Thread-3 : User with id tanvir786 had no cookie to use when trying to view their transactions.
+
+2021-01-09 02:57:32,349 INFO root Thread-17 : Unable to delete PDF receipt for user with id tanvir786. Check if user with this id for this date and time was sent a receipt from the default email sender as user may have not opted for a receipt originally or may be just clearing their basket.
+
+2021-01-09 03:01:10,778 CRITICAL root Thread-15 : User with id tanvir786 had no cookie to use when trying to login and change their password.
+
+2021-01-09 03:01:10,780 CRITICAL root Thread-15 : User with id tanvir786 could not be found when they tried to login and change their password.
+
+2021-01-09 03:01:50,279 CRITICAL root Thread-16 : User with id tanvir786 could not be found when they tried to login and change their password.
+
+2021-01-09 03:04:34,409 CRITICAL root Thread-16 : User with id tanvir786 could not be found when they tried to login and change their password but they seemed to have a cookie present.
+

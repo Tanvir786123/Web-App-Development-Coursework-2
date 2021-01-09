@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, current_user, AnonymousUserMixin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
+import logging
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -14,6 +15,14 @@ migrate = Migrate(app, db, render_as_batch=True)
 
 login_manager = LoginManager(app)
 login_manager.session_protection = "strong"
+
+logging.basicConfig(filename="system.log", level=logging.INFO,
+                    format="%(asctime)s %(levelname)s %(name)s"
+                            +" %(threadName)s : %(message)s\n")
+
+app.logger.disabled = True
+log = logging.getLogger('werkzeug')
+log.disabled = True
 
 # Create customized model view class
 class MyModelView(ModelView):
