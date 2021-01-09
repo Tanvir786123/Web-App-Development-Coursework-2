@@ -124,3 +124,9 @@
 
 2021-01-09 03:21:28,364 INFO root Thread-178 : Unable to delete PDF receipt for user with id marker. Check if user with this id for this date and time was sent a receipt from the default email sender as user may have not opted for a receipt originally or may be just clearing their basket.
 
+2021-01-09 19:39:19,805 INFO root Thread-59 : Unable to delete PDF receipt for user with id tanvir786. Check if user with this id for this date and time was sent a receipt from the default email sender as user may have not opted for a receipt originally or may be just clearing their basket.
+
+2021-01-09 19:41:40,815 INFO root Thread-86 : Unable to delete PDF receipt for user with id tanvir786. Check if user with this id for this date and time was sent a receipt from the default email sender as user may have not opted for a receipt originally or may be just clearing their basket.
+
+2021-01-09 19:42:15,804 INFO root Thread-99 : Unable to delete PDF receipt for user with id tanvir786. Check if user with this id for this date and time was sent a receipt from the default email sender as user may have not opted for a receipt originally or may be just clearing their basket.
+
