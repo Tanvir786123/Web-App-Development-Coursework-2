@@ -30,7 +30,9 @@
               <td>{{ item.date }}</td>
               <td>{{ item.product.product_name }}</td>
               <td>{{ item.quantity }}</td>
-              <td>{{ item.product.product_price * item.quantity }}</td>
+              <td>
+                {{ "%.2f"|format(item.product.product_price * item.quantity) }}
+              </td>
               <td>{{ item.user.username }}</td>
             </tr>
             {% set single_execution.value = 0 %}
@@ -44,7 +46,9 @@
                 <td>{{ item.date }}</td>
                 <td>{{ item.product.product_name }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>{{ item.product.product_price * item.quantity }}</td>
+                <td>
+                  {{ "%.2f"|format(item.product.product_price * item.quantity) }}
+                </td>
               </tr>
               {% set cost.value = item.sub_cost %}
             {% else %}
@@ -66,7 +70,9 @@
                 <td>{{ item.date }}</td>
                 <td>{{ item.product.product_name }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>{{ item.product.product_price * item.quantity }}</td>
+                <td>
+                  {{ "%.2f"|format(item.product.product_price * item.quantity) }}
+                </td>
                 <td>{{ item.user.username }}</td>
               </tr>
               {% set cost.value = item.sub_cost %}
