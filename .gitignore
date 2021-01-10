@@ -1,5 +1,4 @@
 # Ignore all the __pycache__ directories
-
 __pycache__/
 
 # Ignore all database files
@@ -7,3 +6,8 @@ __pycache__/
 
 # Ignore all log files
 *.log
+
+# Ignore all the image extension types whilst keeping the parent directory
+*.png
+*.jpg
+*.jpeg
