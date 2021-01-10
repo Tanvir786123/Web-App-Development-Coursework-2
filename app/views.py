@@ -619,6 +619,18 @@ def signup():
                               str(sign_up_form.email.data))
                 flash('This email has been taken, please try again.')
             else:
+                """
+                The following section of code uses an API in order to determine
+                if the email entered is valid. The API can be found with the
+                following link: https://docs.isitarealemail.com/
+                Due to Leeds email accounts not being recognised for the purpose
+                of marking I have decided to accept email addresses from the API
+                which are returned as either valid or unknown. However ideally
+                either this should not be the case or as pointed out by Amy a
+                more secure API should be used for commercial applications as the
+                chances are due to the security of the API the Leeds server is
+                most likely rejecting it's requests.
+                """
                 response = requests.get(
                            "https://isitarealemail.com/api/email/validate",
                            params = {'email': sign_up_form.email.data})
