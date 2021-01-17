@@ -1,19 +1,19 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, TextAreaField\
                     ,IntegerField, DecimalField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, EqualTo, Length, NumberRange\
                                ,Regexp, InputRequired, ValidationError
 
-class ReceiptForm(Form):
+class ReceiptForm(FlaskForm):
     receipt = BooleanField('Would you like a digital receipt?')
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember me?')
 
-class SignUpForm(Form):
+class SignUpForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),
                             Length(min=5)])
     email = EmailField('Email', validators=[DataRequired(), Length(min=7,
@@ -25,7 +25,7 @@ class SignUpForm(Form):
     confirmed_password = PasswordField('Confirm password',
                                         validators=[DataRequired()])
 
-class AddStaffForm(Form):
+class AddStaffForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),
                             Length(min=5)])
     password = PasswordField('New password', validators=[DataRequired(),
@@ -35,7 +35,7 @@ class AddStaffForm(Form):
     confirmed_password = PasswordField('Confirm password',
                                         validators=[DataRequired()])
 
-class ChangeMyPasswordForm(Form):
+class ChangeMyPasswordForm(FlaskForm):
     password = PasswordField('New password', validators=[DataRequired(),
                               EqualTo('confirmed_password',
                               message='Passwords must match.'),
@@ -43,7 +43,7 @@ class ChangeMyPasswordForm(Form):
     confirmed_password = PasswordField('Confirm password',
                                         validators=[DataRequired()])
 
-class AddProductsForm(Form):
+class AddProductsForm(FlaskForm):
     product_name = StringField('Product name', validators=[DataRequired(),
                                 Length(min=5)])
     product_description = TextAreaField('Product description',
@@ -90,6 +90,6 @@ class AddProductsForm(Form):
         except:
             raise ValidationError('Price must be between £1.00 - £20.00.')
 
-class QuantityForm(Form):
+class QuantityForm(FlaskForm):
     product_id = IntegerField('Product Id')
     quantity = IntegerField('Quantity', validators=[InputRequired()])
