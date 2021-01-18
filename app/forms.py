@@ -56,7 +56,9 @@ class AddProductsForm(FlaskForm):
                                                  decimal places if a decimal\
                                                  was provided. If so, there \
                                                  must be a leading value prior\
-                                                 to the decimal point.")])
+                                                 to the decimal point. Also,\
+                                                 please do not include any\
+                                                 currency symbols.")])
     product_current_quantity = IntegerField('Current quantity',
                                              validators=[InputRequired(),
                                              NumberRange(min=1, message=\
