@@ -11,3 +11,6 @@ __pycache__/
 *.png
 *.jpg
 *.jpeg
+
+# Ignore the venv files
+venv/
