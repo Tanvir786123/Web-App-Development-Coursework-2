@@ -15,13 +15,15 @@ class LoginForm(FlaskForm):
 
 class SignUpForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),
-                            Length(min=5)])
+                            Length(min=5, message="Username must be at least five characters long")])
     email = EmailField('Email', validators=[DataRequired(), Length(min=7,
-                                                                   max=255)])
+                                                                   max=255,
+                                                                   message="Emails must be between seven and two hundred fifty-five characters long")])
     password = PasswordField('New password', validators=[DataRequired(),
                               EqualTo('confirmed_password',
                               message='Passwords must match.'),
-                              Length(min=5)])
+                              Length(min=5,
+                              message="Passwords must be at least five characters long")])
     confirmed_password = PasswordField('Confirm password',
                                         validators=[DataRequired()])
 
