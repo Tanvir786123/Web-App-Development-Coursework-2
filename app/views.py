@@ -635,7 +635,7 @@ def signup():
                            "https://isitarealemail.com/api/email/validate",
                            params = {'email': sign_up_form.email.data})
                 status = response.json()['status']
-                if not status == "valid":
+                if status == "invalid":
                     logging.info('Email address: %s was rejected by API',
                                   str(sign_up_form.email.data))
                     flash('Invalid email address supplied.')

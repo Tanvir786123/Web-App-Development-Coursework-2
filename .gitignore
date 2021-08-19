@@ -7,5 +7,7 @@ __pycache__/
 # Ignore all log files
 *.log
 
-# Ignore the venv files
-venv/
+# Ignore all the image extension types whilst keeping the parent directory
+*.png
+*.jpg
+*.jpeg

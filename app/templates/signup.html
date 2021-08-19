@@ -1,156 +1,129 @@
 {% extends "base.html" %}
 
 {% block signup_stylesheet %}
-<link rel="stylesheet" href="../static/css/sign_up/signup.css">
+  <link rel="stylesheet" href="../static/signup.css">
 {% endblock %}
 
 {% block content %}
-
-<body>
-
-  <div class="d-lg-flex half">
-    <div class="bg order-1 order-md-2" style="background-image: url('../static/images/sign_up/sign_up_background.jpg');">
-    </div>
-    <div class="contents order-2 order-md-1">
-
-      <div class="container">
-        <div class="row align-items-center justify-content-center">
-          <div class="col-md-7">
-            <h3>Sign up to <strong>{{ title }}</strong></h3>
-            <p class="mb-4">Way beyond your expectation.</p>
-            <form id="sign_up" method="post" onsubmit="return validateSignUpForm()">
-              {{ form.hidden_tag() }}
-
-              <div class="form-group first">
-
-                <label for="username_field">Username</label>
-                {{ form.username(autocomplete="username", id="username_field", placeholder="Username", class="form-control" )}}
-                <br>
-
-                <div class="client-id-errors">
-                  <div class="alert alert-danger" role="alert">
-                    <div class="id-errors"></div>
-                  </div>
-                </div>
-
-                <div class="client-id-password-errors">
-                  <div class="alert alert-danger" role="alert">
-                    <div class="password-id-errors"></div>
-                  </div>
-                </div>
-
-                {% for error in form.username.errors %}
-                  <div class="alert alert-danger" role="alert">
-                   {{ error }}
-                  </div>
-                {% endfor %}
-
-                <label for="email_field">Email address</label>
-                {{ form.email(autocomplete="email", id="email_field", placeholder="Email", class="form-control" )}}
-                <br>
-
-                {% for error in form.email.errors %}
-                  <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                  </div>
-                {% endfor %}
-
-                <label for="password_field">Password</label>
-                {{ form.password(autocomplete="new-password", id="password_field", placeholder="New password", class="form-control" )}}
-                <br>
-
-                <label for="confirm_field">Confirm password</label>
-                {{ form.confirmed_password(autocomplete="new-password", id="confirm_field", placeholder="Confirm password", class="form-control" )}}
-                <br>
-                
-                <div class="client-password-errors">
-                  <div class="alert alert-danger" role="alert">
-                    <div class="password-errors"></div>
-                  </div>
-                </div>
-
-                {% for error in form.password.errors %}
-                  <div class="alert alert-danger" role="alert">
-                   {{ error }}
-                 </div>
-                {% endfor %}
-
+<body class="text-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <form class="box" id="sign_up" method="post"
+                onsubmit="return validateSignUpForm()">
+            {{ form.hidden_tag() }}
+            <h1 class="text-color">Sign up</h1>
+            <p class="text-color">Please enter your details below.</p>
+            {{ form.username(autocomplete="username", id="username-field",
+                             placeholder="Username" )}}
+            <div class="client-id-errors">
+              <div class="alert alert-danger" role="alert">
+                  <p class="id-errors"></p>
               </div>
-
-              <input type="submit" value="Sign up" class="btn btn-block btn-primary">
-              <div class="text-center">
-                <span class="ml-auto"><a href="/" class="forgot-pass">Go back?</a></span> 
+            </div>
+            <div class="client-id-password-errors">
+              <div class="alert alert-danger" role="alert">
+                  <p class="password-id-errors"></p>
               </div>
-              <br>
-
-              <div class="flash-messages">
-                {% with messages = get_flashed_messages() %}
-                  {% if messages %}
-                    {% if status %}
-                      <div class="alert alert-success" role="alert">
-                        {% for message in messages %}
-                          {{ message }}
-                        {% endfor %}
-                      </div>
-                    {% else %}
-                      <div class="alert alert-danger" role="alert">
-                        {% for message in messages %}
-                          {{ message }}
-                        {% endfor %}
-                      </div>
-                    {% endif %}
+            </div>
+            {% for error in form.username.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+            {{ form.email(autocomplete="email", id="email-field",
+                             placeholder="Email" )}}
+            {% for error in form.email.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+            {{ form.password(autocomplete="new-password", id="password-field",
+                             placeholder="New password" )}}
+            {{ form.confirmed_password(autocomplete="new-password",
+                                       id="confirm-field",
+                                       placeholder="Confirm password" )}}
+            <div class="client-password-errors">
+              <div class="alert alert-danger" role="alert">
+                <p class="password-errors"></p>
+              </div>
+            </div>
+            {% for error in form.password.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+            <input type="submit" value="Sign up">
+            <a class="text-color" id="ret-label" href="/">Go back</a>
+            <br><br>
+            <div class="flash-messages">
+              {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  {% if status %}
+                    <div class="alert alert-success" role="alert">
+                      {% for message in messages %}
+                        {{ message }}
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <div class="alert alert-danger" role="alert">
+                      {% for message in messages %}
+                        {{ message }}
+                      {% endfor %}
+                    </div>
                   {% endif %}
-                {% endwith %}
-              </div>
-
-            </form>
-          </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+          </form>
         </div>
       </div>
-
     </div>
   </div>
-
   <script>
-    $(document).ready(function () {
-      $("#username_field").val("");
-      $("#email_field").val("");
-      $("#username_field").focus();
-      $(".client-id-errors").hide();
-      $(".client-password-errors").hide();
-      $(".client-id-password-errors").hide();
-    });
-    function validateSignUpForm() {
-      var id = $("#username_field").val();
-      var password = $("#password_field").val();
-      var confirm = $("#confirm_field").val();
-      if (id.length > 255 || password.length > 255 || confirm.length > 255 || id == password) {
-        if (id.length > 255) {
-          $(".id-errors").text("Username must not be more than 255 characters long.");
-          $(".client-id-errors").show();
-        }
-        else {
-          $(".client-id-errors").hide();
-        }
-        if (password.length > 255 || confirm.length > 255) {
-          $(".password-errors").text("Password must not be more than 255 characters long.");
-          $(".client-password-errors").show();
-        }
-        else {
-          $(".client-password-errors").hide();
-        }
-        if (id === password) {
-          $(".password-id-errors").text("Username must be different from the chosen password.");
-          $(".client-id-password-errors").show();
-        }
-        else {
-          $(".client-id-password-errors").hide();
-        }
-        return false;
+  $(document).ready(function(){
+    $("#username-field").val("");
+    $("#email-field").val("");
+    $("#username-field").focus();
+    $(".client-id-errors").hide();
+    $(".client-password-errors").hide();
+    $(".client-id-password-errors").hide();
+  });
+  function validateSignUpForm(){
+    var id = $("#username-field").val();
+    var password = $("#password-field").val();
+    var confirm = $("#confirm-field").val();
+    if (id.length > 255 || password.length > 255 || confirm.length > 255
+        || id == password){
+      if(id.length > 255){
+        $(".id-errors").text("Username must not be more than 255 characters"+
+                             " long.");
+        $(".client-id-errors").show();
       }
-      return true;
+      else{
+        $(".client-id-errors").hide();
+      }
+      if(password.length > 255 || confirm.length > 255){
+        $(".password-errors").text("Password must not be more than 255"+
+                                   " characters long.");
+        $(".client-password-errors").show();
+      }
+      else{
+        $(".client-password-errors").hide();
+      }
+      if(id === password){
+        $(".password-id-errors").text("Username must be different from the"+
+                                      " chosen password.");
+        $(".client-id-password-errors").show();
+      }
+      else{
+        $(".client-id-password-errors").hide();
+      }
+      return false;
     }
+    return true;
+  }
   </script>
-
 </body>
 {% endblock %}
